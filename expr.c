@@ -4,8 +4,8 @@ extern FILE *yyin;
 
 int main()
 {
-	yyin = stdin;
-	printf("Digite uma expressao:\n> ");
+	yyin = fopen("t", "r");
+	//printf("Digite uma expressao:\n> ");
 	yyparse();
 	return 0;
 }
