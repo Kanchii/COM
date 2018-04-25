@@ -17,7 +17,8 @@ literal \".*\"
 "{" {return TACH;}
 "}" {return TFCH;}
 ";" {return TPEV;}
-\n	{return TFIM;}
+"," {return TVIR;}
+\n	{}  //Negocio ta sem '\n' XD
 "if" {return TIF;}
 "else" {return TELSE;}
 "print" {return TPRINT;}
@@ -25,7 +26,7 @@ literal \".*\"
 "while" {return TWHILE;}
 "void" {return TVOID;}
 "int" {return TINT;}
-"string" {return TSTRING;}
+"String" {return TSTRING;}
 "float" {return TFLOAT;}
 "return" {return TRETURN;}
 ">=" {return TMAIORIG;}
