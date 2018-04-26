@@ -4,7 +4,7 @@ letra [A-Za-z]
 digito	[0-9]
 id  (_|{letra})+(_|{letra}|{digito})*
 num	{digito}+(\.{digito}*(E[+-]?{digito}+)?)?
-literal \".*\"
+literal (\".*\")
 
 %%
 {ws}	{}
@@ -18,7 +18,7 @@ literal \".*\"
 "}" {return TFCH;}
 ";" {return TPEV;}
 "," {return TVIR;}
-\n	{}  //Negocio ta sem '\n' XD
+\n	{}
 "if" {return TIF;}
 "else" {return TELSE;}
 "print" {return TPRINT;}
@@ -42,3 +42,4 @@ literal \".*\"
 {literal} {return TLITERAL;}
 {num}	{yylval=atof(yytext); return TNUM;}
 {id}  {return TID;}
+. {printf("Erro léxico\n"); exit(0);}

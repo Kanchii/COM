@@ -373,8 +373,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 36
-#define YY_END_OF_BUFFER 37
+#define YY_NUM_RULES 37
+#define YY_END_OF_BUFFER 38
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -384,7 +384,7 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[85] =
     {   0,
-        0,    0,   37,   36,    1,   12,   32,   36,   36,    6,
+        0,    0,   38,   36,    1,   12,   32,   36,   36,    6,
         7,    4,    2,   11,    3,    5,   34,   10,   25,   28,
        26,   35,   35,   35,   35,   35,   35,   35,   35,   35,
         8,   36,    9,    1,   29,    0,   33,   30,   34,   34,
@@ -865,7 +865,7 @@ case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
 #line 21 "expr.l"
-{}  //Negocio ta sem '\n' XD
+{}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
@@ -985,9 +985,14 @@ YY_RULE_SETUP
 case 36:
 YY_RULE_SETUP
 #line 45 "expr.l"
+{printf("Erro léxico\n"); exit(0);}
+	YY_BREAK
+case 37:
+YY_RULE_SETUP
+#line 46 "expr.l"
 ECHO;
 	YY_BREAK
-#line 991 "lex.yy.c"
+#line 996 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1988,4 +1993,4 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 45 "expr.l"
+#line 46 "expr.l"
