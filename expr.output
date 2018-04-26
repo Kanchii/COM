@@ -1,0 +1,691 @@
+Terminais sem uso na gramática
+
+   TACH
+   TFCH
+   TVOID
+   TINT
+   TSTRING
+   TFLOAT
+   TRETURN
+   TPEV
+   TATRIB
+   TIF
+   TWHILE
+   TELSE
+   TPRINT
+   TREAD
+   TLITERAL
+   TVIR
+
+
+Estado 6 conflitos: 1 de redução/redução
+Estado 9 conflitos: 1 de redução/redução
+Estado 13 conflitos: 1 de deslocamento/redução
+Estado 14 conflitos: 1 de deslocamento/redução
+Estado 18 conflitos: 2 de deslocamento/redução
+
+
+Gramática
+
+    0 $accept: Linha $end
+
+    1 Linha: ExprAritmetica
+    2      | ExprRelacional
+    3      | ExprLogica
+
+    4 ExprAritmetica: ExprAritmetica TADD Termo
+    5               | ExprAritmetica TSUB Termo
+    6               | Termo
+
+    7 Termo: Termo TMUL Fator
+    8      | Termo TDIV Fator
+    9      | Fator
+
+   10 Fator: TNUM
+   11      | TID
+   12      | TAPAR ExprAritmetica TFPAR
+
+   13 ExprRelacional: ExprRelacionalT2 TMENOR ExprAritmetica
+   14               | ExprRelacionalT2 TMAIOR ExprAritmetica
+   15               | ExprRelacionalT2 TMENORIG ExprAritmetica
+   16               | ExprRelacionalT2 TMAIORIG ExprAritmetica
+   17               | ExprRelacionalT2 TIGUAL ExprAritmetica
+   18               | ExprRelacionalT2 TDIF ExprAritmetica
+   19               | ExprRelacionalT2
+
+   20 ExprRelacionalT2: TAPAR ExprRelacional TFPAR
+   21                 | ExprAritmetica
+
+   22 ExprLogica: ExprLogica TAND ExprLogicaT2
+   23           | ExprLogica TOR ExprLogicaT2
+   24           | ExprLogicaT2
+
+   25 ExprLogicaT2: TAPAR ExprLogica TFPAR
+   26             | TNOT ExprLogica
+   27             | ExprRelacional
+
+
+Terminais, com as regras onde eles aparecem
+
+$end (0) 0
+error (256)
+TADD (258) 4
+TMUL (259) 7
+TSUB (260) 5
+TDIV (261) 8
+TAPAR (262) 12 20 25
+TFPAR (263) 12 20 25
+TNUM (264) 10
+TMENOR (265) 13
+TMAIOR (266) 14
+TMENORIG (267) 15
+TMAIORIG (268) 16
+TIGUAL (269) 17
+TDIF (270) 18
+TAND (271) 22
+TOR (272) 23
+TNOT (273) 26
+TID (274) 11
+TACH (275)
+TFCH (276)
+TVOID (277)
+TINT (278)
+TSTRING (279)
+TFLOAT (280)
+TRETURN (281)
+TPEV (282)
+TATRIB (283)
+TIF (284)
+TWHILE (285)
+TELSE (286)
+TPRINT (287)
+TREAD (288)
+TLITERAL (289)
+TVIR (290)
+
+
+Não terminais com as regras onde eles aparecem
+
+$accept (36)
+    à esquerda: 0
+Linha (37)
+    à esquerda: 1 2 3, à direita: 0
+ExprAritmetica (38)
+    à esquerda: 4 5 6, à direita: 1 4 5 12 13 14 15 16 17 18 21
+Termo (39)
+    à esquerda: 7 8 9, à direita: 4 5 6 7 8
+Fator (40)
+    à esquerda: 10 11 12, à direita: 7 8 9
+ExprRelacional (41)
+    à esquerda: 13 14 15 16 17 18 19, à direita: 2 20 27
+ExprRelacionalT2 (42)
+    à esquerda: 20 21, à direita: 13 14 15 16 17 18 19
+ExprLogica (43)
+    à esquerda: 22 23 24, à direita: 3 22 23 25 26
+ExprLogicaT2 (44)
+    à esquerda: 25 26 27, à direita: 22 23 24
+
+
+Estado 0
+
+    0 $accept: . Linha $end
+
+    TAPAR  deslocar, e ir ao estado 1
+    TNUM   deslocar, e ir ao estado 2
+    TNOT   deslocar, e ir ao estado 3
+    TID    deslocar, e ir ao estado 4
+
+    Linha             ir ao estado 5
+    ExprAritmetica    ir ao estado 6
+    Termo             ir ao estado 7
+    Fator             ir ao estado 8
+    ExprRelacional    ir ao estado 9
+    ExprRelacionalT2  ir ao estado 10
+    ExprLogica        ir ao estado 11
+    ExprLogicaT2      ir ao estado 12
+
+
+Estado 1
+
+   12 Fator: TAPAR . ExprAritmetica TFPAR
+   20 ExprRelacionalT2: TAPAR . ExprRelacional TFPAR
+   25 ExprLogicaT2: TAPAR . ExprLogica TFPAR
+
+    TAPAR  deslocar, e ir ao estado 1
+    TNUM   deslocar, e ir ao estado 2
+    TNOT   deslocar, e ir ao estado 3
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica    ir ao estado 13
+    Termo             ir ao estado 7
+    Fator             ir ao estado 8
+    ExprRelacional    ir ao estado 14
+    ExprRelacionalT2  ir ao estado 10
+    ExprLogica        ir ao estado 15
+    ExprLogicaT2      ir ao estado 12
+
+
+Estado 2
+
+   10 Fator: TNUM .
+
+    $padrão  reduzir usando a regra 10 (Fator)
+
+
+Estado 3
+
+   26 ExprLogicaT2: TNOT . ExprLogica
+
+    TAPAR  deslocar, e ir ao estado 1
+    TNUM   deslocar, e ir ao estado 2
+    TNOT   deslocar, e ir ao estado 3
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica    ir ao estado 16
+    Termo             ir ao estado 7
+    Fator             ir ao estado 8
+    ExprRelacional    ir ao estado 17
+    ExprRelacionalT2  ir ao estado 10
+    ExprLogica        ir ao estado 18
+    ExprLogicaT2      ir ao estado 12
+
+
+Estado 4
+
+   11 Fator: TID .
+
+    $padrão  reduzir usando a regra 11 (Fator)
+
+
+Estado 5
+
+    0 $accept: Linha . $end
+
+    $end  deslocar, e ir ao estado 19
+
+
+Estado 6
+
+    1 Linha: ExprAritmetica .
+    4 ExprAritmetica: ExprAritmetica . TADD Termo
+    5               | ExprAritmetica . TSUB Termo
+   21 ExprRelacionalT2: ExprAritmetica .
+
+    TADD  deslocar, e ir ao estado 20
+    TSUB  deslocar, e ir ao estado 21
+
+    $end      reduzir usando a regra 1 (Linha)
+    $end      [reduzir usando a regra 21 (ExprRelacionalT2)]
+    $padrão  reduzir usando a regra 21 (ExprRelacionalT2)
+
+
+Estado 7
+
+    6 ExprAritmetica: Termo .
+    7 Termo: Termo . TMUL Fator
+    8      | Termo . TDIV Fator
+
+    TMUL  deslocar, e ir ao estado 22
+    TDIV  deslocar, e ir ao estado 23
+
+    $padrão  reduzir usando a regra 6 (ExprAritmetica)
+
+
+Estado 8
+
+    9 Termo: Fator .
+
+    $padrão  reduzir usando a regra 9 (Termo)
+
+
+Estado 9
+
+    2 Linha: ExprRelacional .
+   27 ExprLogicaT2: ExprRelacional .
+
+    $end      reduzir usando a regra 2 (Linha)
+    $end      [reduzir usando a regra 27 (ExprLogicaT2)]
+    $padrão  reduzir usando a regra 27 (ExprLogicaT2)
+
+
+Estado 10
+
+   13 ExprRelacional: ExprRelacionalT2 . TMENOR ExprAritmetica
+   14               | ExprRelacionalT2 . TMAIOR ExprAritmetica
+   15               | ExprRelacionalT2 . TMENORIG ExprAritmetica
+   16               | ExprRelacionalT2 . TMAIORIG ExprAritmetica
+   17               | ExprRelacionalT2 . TIGUAL ExprAritmetica
+   18               | ExprRelacionalT2 . TDIF ExprAritmetica
+   19               | ExprRelacionalT2 .
+
+    TMENOR    deslocar, e ir ao estado 24
+    TMAIOR    deslocar, e ir ao estado 25
+    TMENORIG  deslocar, e ir ao estado 26
+    TMAIORIG  deslocar, e ir ao estado 27
+    TIGUAL    deslocar, e ir ao estado 28
+    TDIF      deslocar, e ir ao estado 29
+
+    $padrão  reduzir usando a regra 19 (ExprRelacional)
+
+
+Estado 11
+
+    3 Linha: ExprLogica .
+   22 ExprLogica: ExprLogica . TAND ExprLogicaT2
+   23           | ExprLogica . TOR ExprLogicaT2
+
+    TAND  deslocar, e ir ao estado 30
+    TOR   deslocar, e ir ao estado 31
+
+    $padrão  reduzir usando a regra 3 (Linha)
+
+
+Estado 12
+
+   24 ExprLogica: ExprLogicaT2 .
+
+    $padrão  reduzir usando a regra 24 (ExprLogica)
+
+
+Estado 13
+
+    4 ExprAritmetica: ExprAritmetica . TADD Termo
+    5               | ExprAritmetica . TSUB Termo
+   12 Fator: TAPAR ExprAritmetica . TFPAR
+   21 ExprRelacionalT2: ExprAritmetica .
+
+    TADD   deslocar, e ir ao estado 20
+    TSUB   deslocar, e ir ao estado 21
+    TFPAR  deslocar, e ir ao estado 32
+
+    TFPAR     [reduzir usando a regra 21 (ExprRelacionalT2)]
+    $padrão  reduzir usando a regra 21 (ExprRelacionalT2)
+
+
+Estado 14
+
+   20 ExprRelacionalT2: TAPAR ExprRelacional . TFPAR
+   27 ExprLogicaT2: ExprRelacional .
+
+    TFPAR  deslocar, e ir ao estado 33
+
+    TFPAR     [reduzir usando a regra 27 (ExprLogicaT2)]
+    $padrão  reduzir usando a regra 27 (ExprLogicaT2)
+
+
+Estado 15
+
+   22 ExprLogica: ExprLogica . TAND ExprLogicaT2
+   23           | ExprLogica . TOR ExprLogicaT2
+   25 ExprLogicaT2: TAPAR ExprLogica . TFPAR
+
+    TFPAR  deslocar, e ir ao estado 34
+    TAND   deslocar, e ir ao estado 30
+    TOR    deslocar, e ir ao estado 31
+
+
+Estado 16
+
+    4 ExprAritmetica: ExprAritmetica . TADD Termo
+    5               | ExprAritmetica . TSUB Termo
+   21 ExprRelacionalT2: ExprAritmetica .
+
+    TADD  deslocar, e ir ao estado 20
+    TSUB  deslocar, e ir ao estado 21
+
+    $padrão  reduzir usando a regra 21 (ExprRelacionalT2)
+
+
+Estado 17
+
+   27 ExprLogicaT2: ExprRelacional .
+
+    $padrão  reduzir usando a regra 27 (ExprLogicaT2)
+
+
+Estado 18
+
+   22 ExprLogica: ExprLogica . TAND ExprLogicaT2
+   23           | ExprLogica . TOR ExprLogicaT2
+   26 ExprLogicaT2: TNOT ExprLogica .
+
+    TAND  deslocar, e ir ao estado 30
+    TOR   deslocar, e ir ao estado 31
+
+    TAND      [reduzir usando a regra 26 (ExprLogicaT2)]
+    TOR       [reduzir usando a regra 26 (ExprLogicaT2)]
+    $padrão  reduzir usando a regra 26 (ExprLogicaT2)
+
+
+Estado 19
+
+    0 $accept: Linha $end .
+
+    $padrão  aceitar
+
+
+Estado 20
+
+    4 ExprAritmetica: ExprAritmetica TADD . Termo
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    Termo  ir ao estado 36
+    Fator  ir ao estado 8
+
+
+Estado 21
+
+    5 ExprAritmetica: ExprAritmetica TSUB . Termo
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    Termo  ir ao estado 37
+    Fator  ir ao estado 8
+
+
+Estado 22
+
+    7 Termo: Termo TMUL . Fator
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    Fator  ir ao estado 38
+
+
+Estado 23
+
+    8 Termo: Termo TDIV . Fator
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    Fator  ir ao estado 39
+
+
+Estado 24
+
+   13 ExprRelacional: ExprRelacionalT2 TMENOR . ExprAritmetica
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica  ir ao estado 40
+    Termo           ir ao estado 7
+    Fator           ir ao estado 8
+
+
+Estado 25
+
+   14 ExprRelacional: ExprRelacionalT2 TMAIOR . ExprAritmetica
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica  ir ao estado 41
+    Termo           ir ao estado 7
+    Fator           ir ao estado 8
+
+
+Estado 26
+
+   15 ExprRelacional: ExprRelacionalT2 TMENORIG . ExprAritmetica
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica  ir ao estado 42
+    Termo           ir ao estado 7
+    Fator           ir ao estado 8
+
+
+Estado 27
+
+   16 ExprRelacional: ExprRelacionalT2 TMAIORIG . ExprAritmetica
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica  ir ao estado 43
+    Termo           ir ao estado 7
+    Fator           ir ao estado 8
+
+
+Estado 28
+
+   17 ExprRelacional: ExprRelacionalT2 TIGUAL . ExprAritmetica
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica  ir ao estado 44
+    Termo           ir ao estado 7
+    Fator           ir ao estado 8
+
+
+Estado 29
+
+   18 ExprRelacional: ExprRelacionalT2 TDIF . ExprAritmetica
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica  ir ao estado 45
+    Termo           ir ao estado 7
+    Fator           ir ao estado 8
+
+
+Estado 30
+
+   22 ExprLogica: ExprLogica TAND . ExprLogicaT2
+
+    TAPAR  deslocar, e ir ao estado 1
+    TNUM   deslocar, e ir ao estado 2
+    TNOT   deslocar, e ir ao estado 3
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica    ir ao estado 16
+    Termo             ir ao estado 7
+    Fator             ir ao estado 8
+    ExprRelacional    ir ao estado 17
+    ExprRelacionalT2  ir ao estado 10
+    ExprLogicaT2      ir ao estado 46
+
+
+Estado 31
+
+   23 ExprLogica: ExprLogica TOR . ExprLogicaT2
+
+    TAPAR  deslocar, e ir ao estado 1
+    TNUM   deslocar, e ir ao estado 2
+    TNOT   deslocar, e ir ao estado 3
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica    ir ao estado 16
+    Termo             ir ao estado 7
+    Fator             ir ao estado 8
+    ExprRelacional    ir ao estado 17
+    ExprRelacionalT2  ir ao estado 10
+    ExprLogicaT2      ir ao estado 47
+
+
+Estado 32
+
+   12 Fator: TAPAR ExprAritmetica TFPAR .
+
+    $padrão  reduzir usando a regra 12 (Fator)
+
+
+Estado 33
+
+   20 ExprRelacionalT2: TAPAR ExprRelacional TFPAR .
+
+    $padrão  reduzir usando a regra 20 (ExprRelacionalT2)
+
+
+Estado 34
+
+   25 ExprLogicaT2: TAPAR ExprLogica TFPAR .
+
+    $padrão  reduzir usando a regra 25 (ExprLogicaT2)
+
+
+Estado 35
+
+   12 Fator: TAPAR . ExprAritmetica TFPAR
+
+    TAPAR  deslocar, e ir ao estado 35
+    TNUM   deslocar, e ir ao estado 2
+    TID    deslocar, e ir ao estado 4
+
+    ExprAritmetica  ir ao estado 48
+    Termo           ir ao estado 7
+    Fator           ir ao estado 8
+
+
+Estado 36
+
+    4 ExprAritmetica: ExprAritmetica TADD Termo .
+    7 Termo: Termo . TMUL Fator
+    8      | Termo . TDIV Fator
+
+    TMUL  deslocar, e ir ao estado 22
+    TDIV  deslocar, e ir ao estado 23
+
+    $padrão  reduzir usando a regra 4 (ExprAritmetica)
+
+
+Estado 37
+
+    5 ExprAritmetica: ExprAritmetica TSUB Termo .
+    7 Termo: Termo . TMUL Fator
+    8      | Termo . TDIV Fator
+
+    TMUL  deslocar, e ir ao estado 22
+    TDIV  deslocar, e ir ao estado 23
+
+    $padrão  reduzir usando a regra 5 (ExprAritmetica)
+
+
+Estado 38
+
+    7 Termo: Termo TMUL Fator .
+
+    $padrão  reduzir usando a regra 7 (Termo)
+
+
+Estado 39
+
+    8 Termo: Termo TDIV Fator .
+
+    $padrão  reduzir usando a regra 8 (Termo)
+
+
+Estado 40
+
+    4 ExprAritmetica: ExprAritmetica . TADD Termo
+    5               | ExprAritmetica . TSUB Termo
+   13 ExprRelacional: ExprRelacionalT2 TMENOR ExprAritmetica .
+
+    TADD  deslocar, e ir ao estado 20
+    TSUB  deslocar, e ir ao estado 21
+
+    $padrão  reduzir usando a regra 13 (ExprRelacional)
+
+
+Estado 41
+
+    4 ExprAritmetica: ExprAritmetica . TADD Termo
+    5               | ExprAritmetica . TSUB Termo
+   14 ExprRelacional: ExprRelacionalT2 TMAIOR ExprAritmetica .
+
+    TADD  deslocar, e ir ao estado 20
+    TSUB  deslocar, e ir ao estado 21
+
+    $padrão  reduzir usando a regra 14 (ExprRelacional)
+
+
+Estado 42
+
+    4 ExprAritmetica: ExprAritmetica . TADD Termo
+    5               | ExprAritmetica . TSUB Termo
+   15 ExprRelacional: ExprRelacionalT2 TMENORIG ExprAritmetica .
+
+    TADD  deslocar, e ir ao estado 20
+    TSUB  deslocar, e ir ao estado 21
+
+    $padrão  reduzir usando a regra 15 (ExprRelacional)
+
+
+Estado 43
+
+    4 ExprAritmetica: ExprAritmetica . TADD Termo
+    5               | ExprAritmetica . TSUB Termo
+   16 ExprRelacional: ExprRelacionalT2 TMAIORIG ExprAritmetica .
+
+    TADD  deslocar, e ir ao estado 20
+    TSUB  deslocar, e ir ao estado 21
+
+    $padrão  reduzir usando a regra 16 (ExprRelacional)
+
+
+Estado 44
+
+    4 ExprAritmetica: ExprAritmetica . TADD Termo
+    5               | ExprAritmetica . TSUB Termo
+   17 ExprRelacional: ExprRelacionalT2 TIGUAL ExprAritmetica .
+
+    TADD  deslocar, e ir ao estado 20
+    TSUB  deslocar, e ir ao estado 21
+
+    $padrão  reduzir usando a regra 17 (ExprRelacional)
+
+
+Estado 45
+
+    4 ExprAritmetica: ExprAritmetica . TADD Termo
+    5               | ExprAritmetica . TSUB Termo
+   18 ExprRelacional: ExprRelacionalT2 TDIF ExprAritmetica .
+
+    TADD  deslocar, e ir ao estado 20
+    TSUB  deslocar, e ir ao estado 21
+
+    $padrão  reduzir usando a regra 18 (ExprRelacional)
+
+
+Estado 46
+
+   22 ExprLogica: ExprLogica TAND ExprLogicaT2 .
+
+    $padrão  reduzir usando a regra 22 (ExprLogica)
+
+
+Estado 47
+
+   23 ExprLogica: ExprLogica TOR ExprLogicaT2 .
+
+    $padrão  reduzir usando a regra 23 (ExprLogica)
+
+
+Estado 48
+
+    4 ExprAritmetica: ExprAritmetica . TADD Termo
+    5               | ExprAritmetica . TSUB Termo
+   12 Fator: TAPAR ExprAritmetica . TFPAR
+
+    TADD   deslocar, e ir ao estado 20
+    TSUB   deslocar, e ir ao estado 21
+    TFPAR  deslocar, e ir ao estado 32
