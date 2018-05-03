@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define YYSTYPE double
+int linha = 1;
 %}
 
 %token TADD TMUL TSUB TDIV TAPAR TFPAR TNUM TMENOR TMAIOR TMENORIG TMAIORIG TIGUAL TDIF
@@ -146,7 +147,7 @@ ExprLogicaT2: TAPAR ExprLogica TFPAR
 
 int yyerror (char *str)
 {
-	printf("%s - antes %s\n", str, yytext);
+	printf("%s - antes %s na linha %d\n", str, yytext, linha);
 
 }
 

@@ -865,7 +865,7 @@ case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
 #line 21 "expr.l"
-{}
+{linha++;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
@@ -985,7 +985,7 @@ YY_RULE_SETUP
 case 36:
 YY_RULE_SETUP
 #line 45 "expr.l"
-{printf("Erro léxico\n"); exit(0);}
+{printf("Erro léxico na linha %d\n", linha); exit(0);}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP

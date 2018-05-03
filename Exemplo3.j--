@@ -17,3 +17,4 @@ int fat(int n)
 	x = fat(n);
 	print(x);
 }
+	

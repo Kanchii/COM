@@ -18,7 +18,7 @@ literal (\".*\")
 "}" {return TFCH;}
 ";" {return TPEV;}
 "," {return TVIR;}
-\n	{}
+"\n" {linha++;}
 "if" {return TIF;}
 "else" {return TELSE;}
 "print" {return TPRINT;}
@@ -42,4 +42,4 @@ literal (\".*\")
 {literal} {return TLITERAL;}
 {num}	{yylval=atof(yytext); return TNUM;}
 {id}  {return TID;}
-. {printf("Erro léxico\n"); exit(0);}
+. {printf("Erro léxico na linha %d\n", linha); exit(0);}
