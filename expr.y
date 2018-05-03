@@ -10,7 +10,7 @@ int linha = 1;
 %token TELSE TPRINT TREAD TLITERAL TVIR
 %%
 
-Linha: Programa {printf("Reconhecido\n"); exit(0);}
+Linha: Programa {printf("SUCESSO\n"); exit(0);}
 	 ;
 
  Programa: ListaFuncoes BlocoPrincipal
@@ -20,8 +20,7 @@ Linha: Programa {printf("Reconhecido\n"); exit(0);}
  ListaFuncoes: ListaFuncoes Funcao
         | Funcao
         ;
-
- Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
+Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
 	   | TipoRetorno TID TAPAR TFPAR BlocoPrincipal
 	   ;
 
@@ -147,7 +146,7 @@ ExprLogicaT2: TAPAR ExprLogica TFPAR
 
 int yyerror (char *str)
 {
-	printf("%s - antes %s na linha %d\n", str, yytext, linha);
+	printf("%s - antes %s na linha %d\nFRACASSO\n", str, yytext, linha);
 
 }
 

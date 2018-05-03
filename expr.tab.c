@@ -454,14 +454,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    13,    13,    16,    17,    20,    21,    24,    25,    28,
-      29,    32,    33,    36,    39,    40,    43,    44,    47,    50,
-      51,    52,    55,    56,    59,    62,    63,    66,    67,    68,
-      69,    70,    71,    72,    75,    76,    79,    80,    83,    86,
-      87,    88,    91,    92,    95,    98,   101,   102,   105,   106,
-     107,   108,   111,   112,   113,   116,   117,   118,   121,   122,
-     123,   124,   127,   128,   129,   130,   131,   132,   135,   136,
-     137,   140,   141,   142
+       0,    13,    13,    16,    17,    20,    21,    23,    24,    27,
+      28,    31,    32,    35,    38,    39,    42,    43,    46,    49,
+      50,    51,    54,    55,    58,    61,    62,    65,    66,    67,
+      68,    69,    70,    71,    74,    75,    78,    79,    82,    85,
+      86,    87,    90,    91,    94,    97,   100,   101,   104,   105,
+     106,   107,   110,   111,   112,   115,   116,   117,   120,   121,
+     122,   123,   126,   127,   128,   129,   130,   131,   134,   135,
+     136,   139,   140,   141
 };
 #endif
 
@@ -1340,36 +1340,36 @@ yyreduce:
     {
         case 2:
 #line 13 "expr.y" /* yacc.c:1646  */
-    {printf("Reconhecido\n"); exit(0);}
+    {printf("SUCESSO\n"); exit(0);}
 #line 1345 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 111 "expr.y" /* yacc.c:1646  */
+#line 110 "expr.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) + (yyvsp[0]);}
 #line 1351 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 112 "expr.y" /* yacc.c:1646  */
+#line 111 "expr.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) - (yyvsp[0]);}
 #line 1357 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 116 "expr.y" /* yacc.c:1646  */
+#line 115 "expr.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) * (yyvsp[0]);}
 #line 1363 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 117 "expr.y" /* yacc.c:1646  */
+#line 116 "expr.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) / (yyvsp[0]);}
 #line 1369 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 123 "expr.y" /* yacc.c:1646  */
+#line 122 "expr.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-1]);}
 #line 1375 "expr.tab.c" /* yacc.c:1646  */
     break;
@@ -1603,13 +1603,13 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 145 "expr.y" /* yacc.c:1906  */
+#line 144 "expr.y" /* yacc.c:1906  */
 
 #include "lex.yy.c"
 
 int yyerror (char *str)
 {
-	printf("%s - antes %s na linha %d\n", str, yytext, linha);
+	printf("%s - antes %s na linha %d\nFRACASSO\n", str, yytext, linha);
 
 }
 
