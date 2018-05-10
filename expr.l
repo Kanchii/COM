@@ -40,6 +40,6 @@ literal (\".*\")
 "||" {return TOR;}
 "!" {return TNOT;}
 {literal} {return TLITERAL;}
-{num}	{yylval=atof(yytext); return TNUM;}
-{id}  {return TID;}
+{num}	{return TNUM;}
+{id}  {strncpy(yylval.id, yytext, 10); return TID;}
 . {printf("Erro léxico na linha %d\n", linha); exit(0);}

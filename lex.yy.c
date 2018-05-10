@@ -975,12 +975,12 @@ YY_RULE_SETUP
 case 34:
 YY_RULE_SETUP
 #line 43 "expr.l"
-{yylval=atof(yytext); return TNUM;}
+{return TNUM;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 44 "expr.l"
-{return TID;}
+{strncpy(yylval.id, yytext, 10); return TID;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP

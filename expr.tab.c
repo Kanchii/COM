@@ -66,10 +66,27 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#define YYSTYPE double
+#include "funcoes.h"
+#define YYSTYPE struct Atributos
 int linha = 1;
 
-#line 73 "expr.tab.c" /* yacc.c:339  */
+#define TIPO_INT 1
+#define TIPO_STRING 2
+#define TIPO_FLOAT 3
+
+#define MAX_HASH 509
+#define MAX_STR_SIZE 11
+
+struct TabSimb tabSimb[MAX_HASH];
+
+struct Atributos {
+	int tipo;
+	LDDE *listaID;
+	char id[MAX_STR_SIZE];
+};
+
+
+#line 90 "expr.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -153,7 +170,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 157 "expr.tab.c" /* yacc.c:358  */
+#line 174 "expr.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -454,14 +471,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    13,    13,    16,    17,    20,    21,    23,    24,    27,
-      28,    31,    32,    35,    38,    39,    42,    43,    46,    49,
-      50,    51,    54,    55,    58,    61,    62,    65,    66,    67,
-      68,    69,    70,    71,    74,    75,    78,    79,    82,    85,
-      86,    87,    90,    91,    94,    97,   100,   101,   104,   105,
-     106,   107,   110,   111,   112,   115,   116,   117,   120,   121,
-     122,   123,   126,   127,   128,   129,   130,   131,   134,   135,
-     136,   139,   140,   141
+       0,    30,    30,    33,    34,    37,    38,    40,    41,    44,
+      45,    48,    49,    52,    55,    56,    59,    60,    63,    66,
+      67,    68,    71,    72,    75,    78,    79,    82,    83,    84,
+      85,    86,    87,    88,    91,    92,    95,    96,    99,   102,
+     103,   104,   107,   108,   111,   114,   117,   118,   121,   122,
+     123,   124,   127,   128,   129,   132,   133,   134,   137,   138,
+     139,   140,   143,   144,   145,   146,   147,   148,   151,   152,
+     153,   156,   157,   158
 };
 #endif
 
@@ -1339,43 +1356,49 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 13 "expr.y" /* yacc.c:1646  */
+#line 30 "expr.y" /* yacc.c:1646  */
     {printf("SUCESSO\n"); exit(0);}
-#line 1345 "expr.tab.c" /* yacc.c:1646  */
+#line 1362 "expr.tab.c" /* yacc.c:1646  */
     break;
 
-  case 52:
-#line 110 "expr.y" /* yacc.c:1646  */
-    {(yyval) = (yyvsp[-2]) + (yyvsp[0]);}
-#line 1351 "expr.tab.c" /* yacc.c:1646  */
+  case 18:
+#line 63 "expr.y" /* yacc.c:1646  */
+    {insereTabSimbolo(tabSimb, (yyvsp[-1]).listaID, (yyvsp[-2]).tipo);}
+#line 1368 "expr.tab.c" /* yacc.c:1646  */
     break;
 
-  case 53:
-#line 111 "expr.y" /* yacc.c:1646  */
-    {(yyval) = (yyvsp[-2]) - (yyvsp[0]);}
-#line 1357 "expr.tab.c" /* yacc.c:1646  */
+  case 19:
+#line 66 "expr.y" /* yacc.c:1646  */
+    {(yyval).tipo = TIPO_INT;}
+#line 1374 "expr.tab.c" /* yacc.c:1646  */
     break;
 
-  case 55:
-#line 115 "expr.y" /* yacc.c:1646  */
-    {(yyval) = (yyvsp[-2]) * (yyvsp[0]);}
-#line 1363 "expr.tab.c" /* yacc.c:1646  */
+  case 20:
+#line 67 "expr.y" /* yacc.c:1646  */
+    {(yyval).tipo = TIPO_STRING;}
+#line 1380 "expr.tab.c" /* yacc.c:1646  */
     break;
 
-  case 56:
-#line 116 "expr.y" /* yacc.c:1646  */
-    {(yyval) = (yyvsp[-2]) / (yyvsp[0]);}
-#line 1369 "expr.tab.c" /* yacc.c:1646  */
+  case 21:
+#line 68 "expr.y" /* yacc.c:1646  */
+    {(yyval).tipo = TIPO_FLOAT;}
+#line 1386 "expr.tab.c" /* yacc.c:1646  */
     break;
 
-  case 60:
-#line 122 "expr.y" /* yacc.c:1646  */
-    {(yyval) = (yyvsp[-1]);}
-#line 1375 "expr.tab.c" /* yacc.c:1646  */
+  case 22:
+#line 71 "expr.y" /* yacc.c:1646  */
+    {(yyval).listaID = listaInserir((yyvsp[-2]).listaID, (void *)(yyvsp[0]).id);}
+#line 1392 "expr.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 23:
+#line 72 "expr.y" /* yacc.c:1646  */
+    {(yyval).listaID = listaCriar(sizeof(char) * 11); (yyval).listaID = listaInserir((yyval).listaID, (void *)(yyvsp[0]).id);}
+#line 1398 "expr.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1379 "expr.tab.c" /* yacc.c:1646  */
+#line 1402 "expr.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1603,7 +1626,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 144 "expr.y" /* yacc.c:1906  */
+#line 161 "expr.y" /* yacc.c:1906  */
 
 #include "lex.yy.c"
 
