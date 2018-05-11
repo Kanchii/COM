@@ -22,7 +22,6 @@ LDDE * listaInserir(LDDE *p, void *novo) {
     }
 
     NoLDDE *temp;
-    int ret = 0;
 
     if((temp = (NoLDDE*) malloc(sizeof(NoLDDE))) != NULL) {
         if((temp->dados = (void*) malloc(p->tamInfo)) != NULL) {
@@ -43,10 +42,10 @@ LDDE * listaInserir(LDDE *p, void *novo) {
                 p->fimLista->prox = temp;
                 p->fimLista = temp;
             }
-            ret = 1;
         }
-        else
+        else{
             free(temp);
+        }
     }
     return p;
 }
@@ -132,24 +131,60 @@ void insereTabSimbolo(struct TabSimb *tabSimb, LDDE *p, int tipo){
         char tmp[11];
         strcpy(tmp, (char *)no->dados);
         int h = hash(tmp);
+
         stuff *_tmp = (stuff *)malloc(sizeof(stuff));
 
         strcpy(_tmp->id, tmp);
         _tmp->tipo = tipo;
-        listaInserir(tabSimb[h].lista, (void *)_tmp);
+
+        listaInserirTabSimb(&(tabSimb[h].lista), (void *)_tmp);
+
         no = no->prox;
+    }
+}
+
+void listaInserirTabSimb(LDDE **pp, void *novo){
+    if(*pp == NULL){
+        *pp = listaCriar(sizeof(stuff));
+    }
+    NoLDDE *temp;
+
+    if((temp = (NoLDDE*) malloc(sizeof(NoLDDE))) != NULL) {
+        if((temp->dados = (void*) malloc((*pp)->tamInfo)) != NULL) {
+            memcpy(temp->dados, novo, (*pp)->tamInfo);
+            temp->prox = NULL;
+            if((*pp)->inicioLista == NULL && (*pp)->fimLista == NULL) {
+                temp->ant = NULL;
+                (*pp)->fimLista    = temp;
+                (*pp)->inicioLista = temp;
+            } else if((*pp)->inicioLista == (*pp)->fimLista) {
+                temp->ant  = (*pp)->inicioLista;
+                temp->prox = NULL;
+                (*pp)->fimLista = temp;
+                (*pp)->inicioLista->prox = (*pp)->fimLista;
+            } else {
+                temp->ant   = (*pp)->fimLista;
+                temp->prox  = NULL;
+                (*pp)->fimLista->prox = temp;
+                (*pp)->fimLista = temp;
+            }
+        }
+        else{
+            free(temp);
+        }
     }
 }
 
 void printTabSimb(struct TabSimb *tabSimb){
     int i = 0;
+    printf("%-10s%9s%20s\n", "ID", "Tipo", "Posicao");
     for(i = 0; i < 509; i++) {
         if(tabSimb[i].lista != NULL) {
             NoLDDE * no = tabSimb[i].lista -> inicioLista;
-
             while(no != NULL) {
-                char tmp[11];
-                strcpy(tmp, (stuff) no->dados.id);
+                stuff *aux = (stuff *)no->dados;
+                printf("%-15s%-15s%10s\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")), "----------");
+                no = no->prox;
             }
         }
     }

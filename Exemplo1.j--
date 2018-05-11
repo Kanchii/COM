@@ -1,5 +1,8 @@
 {
 	int a, b;
+	float abc, felipe, cavaleira_eterna;
+	String carai, mano;
+	int c, d;
 
 	print("Valor de A:");
 	read(a);
@@ -19,4 +22,3 @@
 	print("\nRes=");
 	print(a);
 }
-	

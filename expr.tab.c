@@ -1357,7 +1357,7 @@ yyreduce:
     {
         case 2:
 #line 30 "expr.y" /* yacc.c:1646  */
-    {printf("SUCESSO\n"); exit(0);}
+    {printTabSimb(tabSimb); printf("\n\n\tSUCESSO\n"); exit(0);}
 #line 1362 "expr.tab.c" /* yacc.c:1646  */
     break;
 

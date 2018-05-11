@@ -27,7 +27,7 @@ struct Atributos {
 %token TELSE TPRINT TREAD TLITERAL TVIR
 %%
 
-Linha: Programa {printTabSimb(tabSimb); printf("SUCESSO\n"); exit(0);}
+Linha: Programa {printTabSimb(tabSimb); printf("\n\n\tSUCESSO\n"); exit(0);}
 	 ;
 
  Programa: ListaFuncoes BlocoPrincipal

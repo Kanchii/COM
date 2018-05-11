@@ -36,6 +36,7 @@ void destroi(LDDE **pp);
 
 int hash(char *id);
 void insereTabSimbolo(struct TabSimb *tabSimb, LDDE *p, int tipo);
+void listaInserirTabSimb(LDDE **pp, void *novo);
 
 void printTabSimb(struct TabSimb *tabSimb);
 
