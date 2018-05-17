@@ -1,6 +1,8 @@
 #include "funcoes.h"
 #include <stdio.h>
 
+#define MAX_HASH 113
+
 //Criar lista
 LDDE * listaCriar(unsigned long tamInfo) {
     LDDE *desc = (LDDE*) malloc(sizeof(LDDE));
@@ -16,7 +18,7 @@ LDDE * listaCriar(unsigned long tamInfo) {
     return desc;
 }
 
-LDDE * listaInserir(LDDE *p, void *novo) {
+LDDE * listaInserir(LDDE *p, void *novo, int posicao) {
     if(p == NULL){
         p = listaCriar(sizeof(novo));
     }
@@ -25,7 +27,10 @@ LDDE * listaInserir(LDDE *p, void *novo) {
 
     if((temp = (NoLDDE*) malloc(sizeof(NoLDDE))) != NULL) {
         if((temp->dados = (void*) malloc(p->tamInfo)) != NULL) {
-            memcpy(temp->dados, novo, p->tamInfo);
+            stf *tmp  = (stf *)malloc(sizeof(stf));
+            strncpy(tmp -> id, novo, 10);
+            tmp -> posicao = posicao;
+            memcpy(temp->dados, tmp, p->tamInfo);
             temp->prox = NULL;
             if(p->inicioLista == NULL && p->fimLista == NULL) {
                 temp->ant = NULL;
@@ -116,7 +121,6 @@ void destroi(LDDE **pp) {
 
 int hash(char *id){
     int n, i;
-    int MAX_HASH = 509;
 	int hash = n = strlen(id);
 	for (i = 0; i < n; i++) {
 		hash = (hash * (id[i] + i) ^ 843273) % MAX_HASH;
@@ -125,17 +129,31 @@ int hash(char *id){
 	return hash;
 }
 
+int consultaTipoTabSimb(struct TabSimb *tabSimb, char *nome){
+    int h = hash(nome);
+    NoLDDE *no = tabSimb[h].lista -> inicioLista;
+    while(no != NULL){
+        stuff *aux = (stuff *)no -> dados;
+        if(strcmp(aux -> id, nome) == 0){
+            return aux -> tipo;
+        }
+        no = no -> prox;
+    }
+}
+
 void insereTabSimbolo(struct TabSimb *tabSimb, LDDE *p, int tipo){
     NoLDDE * no = p -> inicioLista;
     while(no != NULL) {
         char tmp[11];
-        strcpy(tmp, (char *)no->dados);
+        strcpy(tmp, (char *)((stf *)no->dados) -> id);
         int h = hash(tmp);
 
         stuff *_tmp = (stuff *)malloc(sizeof(stuff));
-
-        strcpy(_tmp->id, tmp);
+        stf *tmmp = (stf *)malloc(sizeof(stf));
+        tmmp = no -> dados;
+        strcpy(_tmp->id, tmmp -> id);
         _tmp->tipo = tipo;
+        _tmp -> posicao = tmmp -> posicao;
 
         listaInserirTabSimb(&(tabSimb[h].lista), (void *)_tmp);
 
@@ -178,12 +196,12 @@ void listaInserirTabSimb(LDDE **pp, void *novo){
 void printTabSimb(struct TabSimb *tabSimb){
     int i = 0;
     printf("%-10s%9s%20s\n", "ID", "Tipo", "Posicao");
-    for(i = 0; i < 509; i++) {
+    for(i = 0; i < MAX_HASH; i++) {
         if(tabSimb[i].lista != NULL) {
             NoLDDE * no = tabSimb[i].lista -> inicioLista;
             while(no != NULL) {
                 stuff *aux = (stuff *)no->dados;
-                printf("%-15s%-15s%10s\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")), "----------");
+                printf("%-15s%-15s%10d\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")), aux -> posicao);
                 no = no->prox;
             }
         }

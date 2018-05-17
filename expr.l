@@ -25,9 +25,9 @@ literal (\".*\")
 "read" {return TREAD;}
 "while" {return TWHILE;}
 "void" {return TVOID;}
-"int" {return TINT;}
+"int" {yylval.tipo = TIPO_INT; return TINT;}
 "String" {return TSTRING;}
-"float" {return TFLOAT;}
+"float" {yylval.tipo = TIPO_FLOAT; return TFLOAT;}
 "return" {return TRETURN;}
 ">=" {return TMAIORIG;}
 "<=" {return TMENORIG;}
@@ -41,5 +41,5 @@ literal (\".*\")
 "!" {return TNOT;}
 {literal} {return TLITERAL;}
 {num}	{return TNUM;}
-{id}  {strncpy(yylval.id, yytext, 10); return TID;}
+{id}  {strncpy(yylval.id, yytext, 10); posicao++; return TID;}
 . {printf("Erro léxico na linha %d\n", linha); exit(0);}

@@ -69,24 +69,34 @@
 #include "funcoes.h"
 #define YYSTYPE struct Atributos
 int linha = 1;
+int posicao = 0;
 
 #define TIPO_INT 1
 #define TIPO_STRING 2
 #define TIPO_FLOAT 3
 
-#define MAX_HASH 509
+#define MAX_HASH 113
 #define MAX_STR_SIZE 11
 
 struct TabSimb tabSimb[MAX_HASH];
 
+struct ArvSint {
+	int op, valor;
+	char id[11];
+	struct ArvSint *prt1, *prt2, *prt3;
+};
+
 struct Atributos {
 	int tipo;
+	int valorInt;
+	float valorFloat;
 	LDDE *listaID;
 	char id[MAX_STR_SIZE];
+	struct ArvSint *arvSint;
 };
 
 
-#line 90 "expr.tab.c" /* yacc.c:339  */
+#line 100 "expr.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -170,7 +180,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 174 "expr.tab.c" /* yacc.c:358  */
+#line 184 "expr.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -471,14 +481,14 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    30,    30,    33,    34,    37,    38,    40,    41,    44,
-      45,    48,    49,    52,    55,    56,    59,    60,    63,    66,
-      67,    68,    71,    72,    75,    78,    79,    82,    83,    84,
-      85,    86,    87,    88,    91,    92,    95,    96,    99,   102,
-     103,   104,   107,   108,   111,   114,   117,   118,   121,   122,
-     123,   124,   127,   128,   129,   132,   133,   134,   137,   138,
-     139,   140,   143,   144,   145,   146,   147,   148,   151,   152,
-     153,   156,   157,   158
+       0,    40,    40,    43,    44,    47,    48,    50,    51,    54,
+      55,    58,    59,    62,    65,    66,    69,    70,    73,    76,
+      77,    78,    81,    82,    85,    88,    89,    92,    93,    94,
+      95,    96,    97,    98,   101,   102,   105,   106,   109,   112,
+     113,   114,   117,   118,   121,   124,   127,   128,   131,   132,
+     133,   134,   137,   138,   139,   142,   143,   144,   147,   148,
+     149,   150,   153,   154,   155,   156,   157,   158,   161,   162,
+     163,   166,   167,   168
 };
 #endif
 
@@ -1356,49 +1366,49 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 30 "expr.y" /* yacc.c:1646  */
+#line 40 "expr.y" /* yacc.c:1646  */
     {printTabSimb(tabSimb); printf("\n\n\tSUCESSO\n"); exit(0);}
-#line 1362 "expr.tab.c" /* yacc.c:1646  */
+#line 1372 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 63 "expr.y" /* yacc.c:1646  */
+#line 73 "expr.y" /* yacc.c:1646  */
     {insereTabSimbolo(tabSimb, (yyvsp[-1]).listaID, (yyvsp[-2]).tipo);}
-#line 1368 "expr.tab.c" /* yacc.c:1646  */
+#line 1378 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 66 "expr.y" /* yacc.c:1646  */
+#line 76 "expr.y" /* yacc.c:1646  */
     {(yyval).tipo = TIPO_INT;}
-#line 1374 "expr.tab.c" /* yacc.c:1646  */
+#line 1384 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 67 "expr.y" /* yacc.c:1646  */
+#line 77 "expr.y" /* yacc.c:1646  */
     {(yyval).tipo = TIPO_STRING;}
-#line 1380 "expr.tab.c" /* yacc.c:1646  */
+#line 1390 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 68 "expr.y" /* yacc.c:1646  */
+#line 78 "expr.y" /* yacc.c:1646  */
     {(yyval).tipo = TIPO_FLOAT;}
-#line 1386 "expr.tab.c" /* yacc.c:1646  */
+#line 1396 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 71 "expr.y" /* yacc.c:1646  */
-    {(yyval).listaID = listaInserir((yyvsp[-2]).listaID, (void *)(yyvsp[0]).id);}
-#line 1392 "expr.tab.c" /* yacc.c:1646  */
+#line 81 "expr.y" /* yacc.c:1646  */
+    {(yyval).listaID = listaInserir((yyvsp[-2]).listaID, (void *)(yyvsp[0]).id, posicao);}
+#line 1402 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 72 "expr.y" /* yacc.c:1646  */
-    {(yyval).listaID = listaCriar(sizeof(char) * 11); (yyval).listaID = listaInserir((yyval).listaID, (void *)(yyvsp[0]).id);}
-#line 1398 "expr.tab.c" /* yacc.c:1646  */
+#line 82 "expr.y" /* yacc.c:1646  */
+    {(yyval).listaID = listaCriar(sizeof(stf)); (yyval).listaID = listaInserir((yyval).listaID, (void *)(yyvsp[0]).id, posicao);}
+#line 1408 "expr.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1402 "expr.tab.c" /* yacc.c:1646  */
+#line 1412 "expr.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1626,7 +1636,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 161 "expr.y" /* yacc.c:1906  */
+#line 171 "expr.y" /* yacc.c:1906  */
 
 #include "lex.yy.c"
 

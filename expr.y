@@ -4,20 +4,30 @@
 #include "funcoes.h"
 #define YYSTYPE struct Atributos
 int linha = 1;
+int posicao = 0;
 
 #define TIPO_INT 1
 #define TIPO_STRING 2
 #define TIPO_FLOAT 3
 
-#define MAX_HASH 509
+#define MAX_HASH 113
 #define MAX_STR_SIZE 11
 
 struct TabSimb tabSimb[MAX_HASH];
 
+struct ArvSint {
+	int op, valor;
+	char id[11];
+	struct ArvSint *prt1, *prt2, *prt3;
+};
+
 struct Atributos {
 	int tipo;
+	int valorInt;
+	float valorFloat;
 	LDDE *listaID;
 	char id[MAX_STR_SIZE];
+	struct ArvSint *arvSint;
 };
 
 %}
@@ -68,8 +78,8 @@ Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
  | TFLOAT {$$.tipo = TIPO_FLOAT;}
  ;
 
- ListaId: ListaId TVIR TID {$$.listaID = listaInserir($1.listaID, (void *)$3.id);}
-        | TID {$$.listaID = listaCriar(sizeof(char) * 11); $$.listaID = listaInserir($$.listaID, (void *)$1.id);}
+ ListaId: ListaId TVIR TID {$$.listaID = listaInserir($1.listaID, (void *)$3.id, posicao);}
+        | TID {$$.listaID = listaCriar(sizeof(stf)); $$.listaID = listaInserir($$.listaID, (void *)$1.id, posicao);}
         ;
 
  Bloco: TACH ListaCmd TFCH

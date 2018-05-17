@@ -1,6 +1,6 @@
 int fat(int n)
 {
-	int f;
+	String f;
 
 	f = 1;
 	while(n>0)
