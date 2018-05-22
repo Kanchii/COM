@@ -4,27 +4,23 @@
 #include "funcoes.h"
 #define YYSTYPE struct Atributos
 int linha = 1;
-int posicao = 0;
 
 #define TIPO_INT 1
 #define TIPO_STRING 2
 #define TIPO_FLOAT 3
+
+#define OP_ADD 1
+#define OP_SUB 2
+#define OP_MULT 3
+#define OP_DIV 4
 
 #define MAX_HASH 113
 #define MAX_STR_SIZE 11
 
 struct TabSimb tabSimb[MAX_HASH];
 
-struct ArvSint {
-	int op, valor;
-	char id[11];
-	struct ArvSint *prt1, *prt2, *prt3;
-};
-
 struct Atributos {
 	int tipo;
-	int valorInt;
-	float valorFloat;
 	LDDE *listaID;
 	char id[MAX_STR_SIZE];
 	struct ArvSint *arvSint;
@@ -37,7 +33,7 @@ struct Atributos {
 %token TELSE TPRINT TREAD TLITERAL TVIR
 %%
 
-Linha: Programa {printTabSimb(tabSimb); printf("\n\n\tSUCESSO\n"); exit(0);}
+Linha: Programa {printPosOrdem($$.arvSint); printTabSimb(tabSimb); printf("\n\n\tSUCESSO\n"); exit(0);}
 	 ;
 
  Programa: ListaFuncoes BlocoPrincipal
@@ -78,8 +74,8 @@ Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
  | TFLOAT {$$.tipo = TIPO_FLOAT;}
  ;
 
- ListaId: ListaId TVIR TID {$$.listaID = listaInserir($1.listaID, (void *)$3.id, posicao);}
-        | TID {$$.listaID = listaCriar(sizeof(stf)); $$.listaID = listaInserir($$.listaID, (void *)$1.id, posicao);}
+ ListaId: ListaId TVIR TID {$$.listaID = listaInserir($1.listaID, (void *)$3.id);}
+        | TID {$$.listaID = listaCriar(sizeof(stf)); $$.listaID = listaInserir($$.listaID, (void *)$1.id);}
         ;
 
  Bloco: TACH ListaCmd TFCH
@@ -134,19 +130,19 @@ Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
            | TLITERAL
            ;
 
-ExprAritmetica: ExprAritmetica TADD Termo
-		          | ExprAritmetica TSUB Termo
-		 	  	  	| Termo
-				  		;
+ExprAritmetica: ExprAritmetica TADD Termo {$$.arvSint = criaNo(OP_ADD, $1.arvSint, $3.arvSint, NULL);}
+		      | ExprAritmetica TSUB Termo {$$.arvSint = criaNo(OP_SUB, $1.arvSint, $3.arvSint, NULL);}
+		 	  | Termo {$$.arvSint = $1.arvSint;}
+			  ;
 
-Termo: Termo TMUL Fator
-	 | Termo TDIV Fator
-	 | Fator
+Termo: Termo TMUL Fator {$$.arvSint = criaNo(OP_MULT, $1.arvSint, $3.arvSint, NULL);}
+	 | Termo TDIV Fator {$$.arvSint = criaNo(OP_DIV, $1.arvSint, $3.arvSint, NULL);}
+	 | Fator {$$.arvSint = $1.arvSint;}
 	 ;
 
-Fator: TNUM
-	 | TID
-	 | TAPAR ExprAritmetica TFPAR
+Fator: TNUM {$$.arvSint = criaNoV($1.id);}
+	 | TID {$$.arvSint = criaNoV($1.id);}
+	 | TAPAR ExprAritmetica TFPAR {$$.arvSint = $2.arvSint;}
 	 | TSUB Fator
 	 ;
 

@@ -18,7 +18,7 @@ LDDE * listaCriar(unsigned long tamInfo) {
     return desc;
 }
 
-LDDE * listaInserir(LDDE *p, void *novo, int posicao) {
+LDDE * listaInserir(LDDE *p, void *novo) {
     if(p == NULL){
         p = listaCriar(sizeof(novo));
     }
@@ -29,7 +29,6 @@ LDDE * listaInserir(LDDE *p, void *novo, int posicao) {
         if((temp->dados = (void*) malloc(p->tamInfo)) != NULL) {
             stf *tmp  = (stf *)malloc(sizeof(stf));
             strncpy(tmp -> id, novo, 10);
-            tmp -> posicao = posicao;
             memcpy(temp->dados, tmp, p->tamInfo);
             temp->prox = NULL;
             if(p->inicioLista == NULL && p->fimLista == NULL) {
@@ -119,6 +118,36 @@ void destroi(LDDE **pp) {
     (*pp) = NULL;
 }
 
+struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, struct ArvSint *ptr3){
+    struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
+    tmp -> op = op;
+    tmp -> ptr1 = ptr1;
+    tmp -> ptr2 = ptr2;
+    tmp -> ptr3 = ptr3;
+    return tmp;
+}
+
+struct ArvSint * criaNoV(char *valor){
+    struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
+    tmp -> ptr1 = NULL;
+    tmp -> ptr2 = NULL;
+    tmp -> ptr3 = NULL;
+    strcpy(tmp -> valor, valor);
+    return tmp;
+}
+
+void printPosOrdem(struct ArvSint *no){
+    if(no == NULL) return;
+    if(no -> ptr1 == NULL && no -> ptr2 == NULL && no -> ptr3 == NULL){
+        printf("%s -> ", no -> valor);
+        return;
+    }
+    printPosOrdem(no -> ptr1);
+    printPosOrdem(no -> ptr2);
+    printPosOrdem(no -> ptr3);
+    printf("%d -> ", no -> op);
+}
+
 int hash(char *id){
     int n, i;
 	int hash = n = strlen(id);
@@ -201,7 +230,7 @@ void printTabSimb(struct TabSimb *tabSimb){
             NoLDDE * no = tabSimb[i].lista -> inicioLista;
             while(no != NULL) {
                 stuff *aux = (stuff *)no->dados;
-                printf("%-15s%-15s%10d\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")), aux -> posicao);
+                printf("%-15s%-15s-----------\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")));
                 no = no->prox;
             }
         }
