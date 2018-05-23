@@ -14,11 +14,19 @@ int linha = 1;
 
 struct TabSimb tabSimb[MAX_HASH];
 
+struct ArvSint {
+	int op, valor;
+	char id[11];
+	struct ArvSint *pr1, *pr2, *pr3;
+};
+
 struct Atributos {
 	int tipo;
 	LDDE *listaID;
 	char id[MAX_STR_SIZE];
+	struct ArvSint *arvSint;
 };
+
 
 %}
 
@@ -134,9 +142,9 @@ Termo: Termo TMUL Fator
 	 | Fator
 	 ;
 
-Fator: TNUM
-	 | TID
-	 | TAPAR ExprAritmetica TFPAR
+Fator: TNUM {$$.arvSint = createIDNodeArvSint($1.id);}
+	 | TID {$$.arvSint = createIDNodeArvSint($1.id);}
+	 | TAPAR ExprAritmetica TFPAR {$$.arvSint = $2.arvSint;}
 	 | TSUB Fator
 	 ;
 

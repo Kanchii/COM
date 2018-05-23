@@ -975,7 +975,7 @@ YY_RULE_SETUP
 case 34:
 YY_RULE_SETUP
 #line 43 "expr.l"
-{return TNUM;}
+{strcpy(yylval.id, yytext); return TNUM;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
