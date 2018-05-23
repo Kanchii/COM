@@ -1,6 +1,8 @@
 #include "funcoes.h"
 #include <stdio.h>
 
+#define MAX_HASH 113
+
 //Criar lista
 LDDE * listaCriar(unsigned long tamInfo) {
     LDDE *desc = (LDDE*) malloc(sizeof(LDDE));
@@ -25,7 +27,9 @@ LDDE * listaInserir(LDDE *p, void *novo) {
 
     if((temp = (NoLDDE*) malloc(sizeof(NoLDDE))) != NULL) {
         if((temp->dados = (void*) malloc(p->tamInfo)) != NULL) {
-            memcpy(temp->dados, novo, p->tamInfo);
+            stf *tmp  = (stf *)malloc(sizeof(stf));
+            strncpy(tmp -> id, novo, 10);
+            memcpy(temp->dados, tmp, p->tamInfo);
             temp->prox = NULL;
             if(p->inicioLista == NULL && p->fimLista == NULL) {
                 temp->ant = NULL;
@@ -114,9 +118,41 @@ void destroi(LDDE **pp) {
     (*pp) = NULL;
 }
 
+struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, struct ArvSint *ptr3){
+    struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
+    tmp -> op = op;
+    tmp -> ptr1 = ptr1;
+    tmp -> ptr2 = ptr2;
+    tmp -> ptr3 = ptr3;
+    return tmp;
+}
+
+struct ArvSint * criaNoV(char *valor){
+    struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
+    tmp -> ptr1 = NULL;
+    tmp -> ptr2 = NULL;
+    tmp -> ptr3 = NULL;
+    tmp -> op = -1;
+    strcpy(tmp -> valor, valor);
+    return tmp;
+}
+
+void printPosOrdem(struct ArvSint *no){
+    if(no == NULL) {
+        return;
+    }
+    printPosOrdem(no -> ptr1);
+    printPosOrdem(no -> ptr2);
+    printPosOrdem(no -> ptr3);
+    if(no -> op == -1){
+        printf("%s -> ", no -> valor);
+    } else {
+        printf("%s -> ", (no -> op == OP_ADD ? "ADD" : (no -> op == OP_SUB ? "SUB" : (no -> op == OP_DIV ? "DIV" : (no -> op == OP_MULT ? "MULT" : "...")))));
+    }
+}
+
 int hash(char *id){
     int n, i;
-    int MAX_HASH = 509;
 	int hash = n = strlen(id);
 	for (i = 0; i < n; i++) {
 		hash = (hash * (id[i] + i) ^ 843273) % MAX_HASH;
@@ -125,17 +161,31 @@ int hash(char *id){
 	return hash;
 }
 
-void insereTabSimbolo(struct TabSimb *tabSimb, LDDE *p, int tipo){
+int consultaTipoTabSimb(char *nome){
+    int h = hash(nome);
+    NoLDDE *no = tabSimb[h].lista -> inicioLista;
+    while(no != NULL){
+        stuff *aux = (stuff *)no -> dados;
+        if(strcmp(aux -> id, nome) == 0){
+            return aux -> tipo;
+        }
+        no = no -> prox;
+    }
+}
+
+void insereTabSimbolo(LDDE *p, int tipo){
     NoLDDE * no = p -> inicioLista;
     while(no != NULL) {
         char tmp[11];
-        strcpy(tmp, (char *)no->dados);
+        strcpy(tmp, (char *)((stf *)no->dados) -> id);
         int h = hash(tmp);
 
         stuff *_tmp = (stuff *)malloc(sizeof(stuff));
-
-        strcpy(_tmp->id, tmp);
+        stf *tmmp = (stf *)malloc(sizeof(stf));
+        tmmp = no -> dados;
+        strcpy(_tmp->id, tmmp -> id);
         _tmp->tipo = tipo;
+        _tmp -> posicao = tmmp -> posicao;
 
         listaInserirTabSimb(&(tabSimb[h].lista), (void *)_tmp);
 
@@ -175,15 +225,15 @@ void listaInserirTabSimb(LDDE **pp, void *novo){
     }
 }
 
-void printTabSimb(struct TabSimb *tabSimb){
+void printTabSimb(){
     int i = 0;
     printf("%-10s%9s%20s\n", "ID", "Tipo", "Posicao");
-    for(i = 0; i < 509; i++) {
+    for(i = 0; i < MAX_HASH; i++) {
         if(tabSimb[i].lista != NULL) {
             NoLDDE * no = tabSimb[i].lista -> inicioLista;
             while(no != NULL) {
                 stuff *aux = (stuff *)no->dados;
-                printf("%-15s%-15s%10s\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")), "----------");
+                printf("%-15s%-15s-----------\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")));
                 no = no->prox;
             }
         }

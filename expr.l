@@ -25,9 +25,9 @@ literal (\".*\")
 "read" {return TREAD;}
 "while" {return TWHILE;}
 "void" {return TVOID;}
-"int" {return TINT;}
+"int" {yylval.tipo = TIPO_INT; return TINT;}
 "String" {return TSTRING;}
-"float" {return TFLOAT;}
+"float" {yylval.tipo = TIPO_FLOAT; return TFLOAT;}
 "return" {return TRETURN;}
 ">=" {return TMAIORIG;}
 "<=" {return TMENORIG;}

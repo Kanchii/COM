@@ -1,21 +1,18 @@
 {
-	int a, b;
-	float abc, felipe, cavaleira_eterna;
-	String carai, mano;
-	int c, d;
+	int a, b, c;
+	float d, e;
+	String f, g, h;
+	String s1, s2;
 
 	print("Valor de A:");
 	read(a);
 	print("Valor de B:");
 	read(b);
-	while (a != b)
-	{
-		if (a > b)
-		{
+	while (a != b){
+		if (a > b){
 			a = a - b;
 		}
-		if (b > a)
-		{
+		if (b > a){
 			b = b - a;
 		}
 	}

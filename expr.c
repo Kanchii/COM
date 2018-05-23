@@ -10,7 +10,6 @@ int main(int argc, char *argv[])
 	char *path = (char *)malloc(sizeof(char) * (tam + 1));
 	strcpy(path, argv[1]);
 	yyin = fopen(path, "r");
-	//printf("Digite uma expressao:\n> ");
 	yyparse();
 	return 0;
 }

@@ -5,29 +5,6 @@
 #define YYSTYPE struct Atributos
 int linha = 1;
 
-#define TIPO_INT 1
-#define TIPO_STRING 2
-#define TIPO_FLOAT 3
-
-#define MAX_HASH 509
-#define MAX_STR_SIZE 11
-
-struct TabSimb tabSimb[MAX_HASH];
-
-struct ArvSint {
-	int op, valor;
-	char id[11];
-	struct ArvSint *pr1, *pr2, *pr3;
-};
-
-struct Atributos {
-	int tipo;
-	LDDE *listaID;
-	char id[MAX_STR_SIZE];
-	struct ArvSint *arvSint;
-};
-
-
 %}
 
 %token TADD TMUL TSUB TDIV TAPAR TFPAR TNUM TMENOR TMAIOR TMENORIG TMAIORIG TIGUAL TDIF
@@ -35,11 +12,11 @@ struct Atributos {
 %token TELSE TPRINT TREAD TLITERAL TVIR
 %%
 
-Linha: Programa {printTabSimb(tabSimb); printf("\n\n\tSUCESSO\n"); exit(0);}
+Linha: Programa {printTabSimb(); printPosOrdem($1.arvSint); printf("\n\n\tSUCESSO\n"); exit(0);}
 	 ;
 
- Programa: ListaFuncoes BlocoPrincipal
-    | BlocoPrincipal
+ Programa: ListaFuncoes BlocoPrincipal {$$.arvSint = $2.arvSint;}
+    | BlocoPrincipal {$$.arvSint = $1.arvSint;}
     ;
 
  ListaFuncoes: ListaFuncoes Funcao
@@ -60,15 +37,15 @@ Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
  Parametro: Tipo TID
      ;
 
- BlocoPrincipal: TACH Declaracoes ListaCmd TFCH
-          | TACH ListaCmd TFCH
+ BlocoPrincipal: TACH Declaracoes ListaCmd TFCH {$$.arvSint = $3.arvSint;}
+          | TACH ListaCmd TFCH {$$.arvSint = $2.arvSint;}
           ;
 
  Declaracoes: Declaracoes Declaracao
        | Declaracao
        ;
 
- Declaracao: Tipo ListaId TPEV {insereTabSimbolo(tabSimb, $2.listaID, $1.tipo);}
+ Declaracao: Tipo ListaId TPEV {insereTabSimbolo($2.listaID, $1.tipo);}
            ;
 
  Tipo: TINT {$$.tipo = TIPO_INT;}
@@ -77,20 +54,20 @@ Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
  ;
 
  ListaId: ListaId TVIR TID {$$.listaID = listaInserir($1.listaID, (void *)$3.id);}
-        | TID {$$.listaID = listaCriar(sizeof(char) * 11); $$.listaID = listaInserir($$.listaID, (void *)$1.id);}
+        | TID {$$.listaID = listaCriar(sizeof(stf)); $$.listaID = listaInserir($$.listaID, (void *)$1.id);}
         ;
 
- Bloco: TACH ListaCmd TFCH
+ Bloco: TACH ListaCmd TFCH {$$.arvSint = $2.arvSint;}
  ;
 
- ListaCmd: ListaCmd Comando
-    | Comando
+ ListaCmd: ListaCmd Comando {$$.arvSint = criaNo(OP_ALEA, $1.arvSint, $2.arvSint, NULL);}
+    | Comando {$$.arvSint = $1.arvSint;}
     ;
 
  Comando: CmdSe
    | CmdEnquanto
    | CmdAtrib
-   | CmdEscrita
+   | CmdEscrita {$$.arvSint = $1.arvSint;}
    | CmdLeitura
    | ChamadaProc
    | Retorno
@@ -112,7 +89,7 @@ Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
     | TID TATRIB ChamadaProc TPEV
     ;
 
- CmdEscrita: TPRINT TAPAR ExprAritmetica TFPAR TPEV
+ CmdEscrita: TPRINT TAPAR ExprAritmetica TFPAR TPEV {$$.arvSint = $3.arvSint;}
       | TPRINT TAPAR TLITERAL TFPAR TPEV
       ;
 
@@ -132,18 +109,18 @@ Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
            | TLITERAL
            ;
 
-ExprAritmetica: ExprAritmetica TADD Termo
-		          | ExprAritmetica TSUB Termo
-		 	  	  	| Termo
-				  		;
+ExprAritmetica: ExprAritmetica TADD Termo {$$.arvSint = criaNo(OP_ADD, $1.arvSint, $3.arvSint, NULL);}
+		      | ExprAritmetica TSUB Termo {$$.arvSint = criaNo(OP_SUB, $1.arvSint, $3.arvSint, NULL);}
+		 	  | Termo {$$.arvSint = $1.arvSint;}
+			  ;
 
-Termo: Termo TMUL Fator
-	 | Termo TDIV Fator
-	 | Fator
+Termo: Termo TMUL Fator {$$.arvSint = criaNo(OP_MULT, $1.arvSint, $3.arvSint, NULL);}
+	 | Termo TDIV Fator {$$.arvSint = criaNo(OP_DIV, $1.arvSint, $3.arvSint, NULL);}
+	 | Fator {$$.arvSint = $1.arvSint;}
 	 ;
 
-Fator: TNUM {$$.arvSint = createIDNodeArvSint($1.id);}
-	 | TID {$$.arvSint = createIDNodeArvSint($1.id);}
+Fator: TNUM {$$.arvSint = criaNoV($1.id);}
+	 | TID {$$.arvSint = criaNoV($1.id);}
 	 | TAPAR ExprAritmetica TFPAR {$$.arvSint = $2.arvSint;}
 	 | TSUB Fator
 	 ;

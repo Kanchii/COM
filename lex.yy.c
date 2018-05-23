@@ -900,7 +900,7 @@ YY_RULE_SETUP
 case 19:
 YY_RULE_SETUP
 #line 28 "expr.l"
-{return TINT;}
+{yylval.tipo = TIPO_INT; return TINT;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
@@ -910,7 +910,7 @@ YY_RULE_SETUP
 case 21:
 YY_RULE_SETUP
 #line 30 "expr.l"
-{return TFLOAT;}
+{yylval.tipo = TIPO_FLOAT; return TFLOAT;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
