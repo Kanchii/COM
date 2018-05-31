@@ -1,8 +1,6 @@
 {
-	int a, b, c;
-	float d, e;
-	String f, g, h;
-	String s1, s2;
+	int a;
+	float b;
 
 	print("Valor de A:");
 	read(a);
@@ -18,4 +16,5 @@
 	}
 	print("\nRes=");
 	print(a);
+	return 0;
 }

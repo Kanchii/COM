@@ -1,0 +1,1 @@
+dot -Tjpeg graph.dot -o graph.jpeg

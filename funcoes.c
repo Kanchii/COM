@@ -1,5 +1,4 @@
 #include "funcoes.h"
-#include <stdio.h>
 
 #define MAX_HASH 113
 
@@ -18,7 +17,7 @@ LDDE * listaCriar(unsigned long tamInfo) {
     return desc;
 }
 
-LDDE * listaInserir(LDDE *p, void *novo) {
+LDDE * listaInserir(LDDE *p, void *novo, int pos) {
     if(p == NULL){
         p = listaCriar(sizeof(novo));
     }
@@ -29,6 +28,7 @@ LDDE * listaInserir(LDDE *p, void *novo) {
         if((temp->dados = (void*) malloc(p->tamInfo)) != NULL) {
             stf *tmp  = (stf *)malloc(sizeof(stf));
             strncpy(tmp -> id, novo, 10);
+            tmp -> posicao = pos;
             memcpy(temp->dados, tmp, p->tamInfo);
             temp->prox = NULL;
             if(p->inicioLista == NULL && p->fimLista == NULL) {
@@ -118,25 +118,115 @@ void destroi(LDDE **pp) {
     (*pp) = NULL;
 }
 
+struct ArvSint *createNodoConversor(int op, struct ArvSint *ptr){
+    struct ArvSint *novoNodo = (struct ArvSint *)malloc(sizeof(struct ArvSint));
+    novoNodo -> op = op;
+    novoNodo -> tipo = (op == OP_INTTOFLOAT ? TIPO_FLOAT : TIPO_INT);
+    novoNodo -> ptr1 = ptr;
+    novoNodo -> ptr2 = NULL;
+    novoNodo -> ptr3 = NULL;
+    return novoNodo;
+}
+
+int binaryOp(int op){
+    return (op == OP_MAIORIG || op == OP_DIF || op == OP_MENORIG || op == OP_MAIOR || op == OP_SUB || op == OP_DIV ||
+            op == OP_MULT || op == OP_ADD || op == OP_ATRIB);
+}
+
 struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, struct ArvSint *ptr3){
     struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
     tmp -> op = op;
+
+    int f = 0;
+    if(op == OP_ATRIB){
+        int t1 = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : ptr1 -> tipo);
+        int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : ptr2 -> tipo);
+        if(t1 == TIPO_FLOAT && t2 == TIPO_INT){
+            ptr2 = createNodoConversor(OP_INTTOFLOAT, ptr2);
+        } else if(t1 == TIPO_INT && t2 == TIPO_FLOAT){
+            ptr2 = createNodoConversor(OP_FLOATTOINT, ptr2);
+        }
+    } else if(ptr1 != NULL && ptr2 != NULL && binaryOp(op)){
+        int t1 = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : ptr1 -> tipo);
+        int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : ptr2 -> tipo);
+
+        if((t1 == TIPO_INT && t2 == TIPO_FLOAT) || (t1 == TIPO_FLOAT && t2 == TIPO_INT)){
+            f = 1;
+            if(t1 == TIPO_INT){
+                ptr1 = createNodoConversor(OP_INTTOFLOAT, ptr1);
+            } else {
+                ptr2 = createNodoConversor(OP_INTTOFLOAT, ptr2);
+            }
+        }
+    }
+    if(ptr1 != NULL){
+        tmp -> tipo = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : ptr1 -> tipo);
+    } else {
+        tmp -> tipo = OP_ALEA;
+    }
     tmp -> ptr1 = ptr1;
     tmp -> ptr2 = ptr2;
     tmp -> ptr3 = ptr3;
     return tmp;
 }
 
-struct ArvSint * criaNoV(char *valor){
+struct ArvSint * criaNoV(int tipo, UnionV v){
     struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
     tmp -> ptr1 = NULL;
     tmp -> ptr2 = NULL;
     tmp -> ptr3 = NULL;
     tmp -> op = -1;
-    strcpy(tmp -> valor, valor);
+    tmp -> tipo = tipo;
+    tmp -> value = v;
     return tmp;
 }
 
+char *printOperador(int op){
+    switch (op) {
+        case OP_ADD:
+            return "ADD";
+        case OP_SUB:
+            return "SUB";
+        case OP_DIV:
+            return "DIV";
+        case OP_MULT:
+            return "MULT";
+        case OP_INTTOFLOAT:
+            return "INTTOFLOAT";
+        case OP_FLOATTOINT:
+            return "FLOATTOINT";
+        case OP_ATRIB:
+            return "ATRIB";
+        case OP_PRINT:
+            return "PRINT";
+        case OP_RETURN:
+            return "RETURN";
+        case OP_READ:
+            return "READ";
+        case OP_IF:
+            return "IF";
+        case OP_MENOR:
+            return "<";
+        case OP_MENORIG:
+            return "<=";
+        case OP_MAIOR:
+            return ">";
+        case OP_MAIORIG:
+            return ">=";
+        case OP_DIF:
+            return "!=";
+        case OP_AND:
+            return "&&";
+        case OP_OR:
+            return "||";
+        case OP_NOT:
+            return "!";
+        case OP_WHILE:
+            return "WHILE";
+        default:
+            return "?";
+    }
+}
 void printPosOrdem(struct ArvSint *no){
     if(no == NULL) {
         return;
@@ -145,9 +235,120 @@ void printPosOrdem(struct ArvSint *no){
     printPosOrdem(no -> ptr2);
     printPosOrdem(no -> ptr3);
     if(no -> op == -1){
-        printf("%s -> ", no -> valor);
+        if(no -> tipo == TIPO_INT){
+            printf("%d -> ", no -> value.intV);
+        } else if(no -> tipo == TIPO_FLOAT){
+            printf("%.2f -> ", no -> value.floatV);
+        } else if(no -> tipo == TIPO_ID){
+            printf("%s -> ", no -> value.id);
+        } else {
+            printf("%s -> ", no -> value.stringV);
+        }
     } else {
-        printf("%s -> ", (no -> op == OP_ADD ? "ADD" : (no -> op == OP_SUB ? "SUB" : (no -> op == OP_DIV ? "DIV" : (no -> op == OP_MULT ? "MULT" : "...")))));
+        if(no -> op != OP_ALEA){
+            printf("%s -> ", printOperador(no -> op));
+        }
+    }
+}
+
+void buildJVM(struct ArvSint *no){
+    FILE *f = fopen("JVM.j", "w");
+    buildJVMUtil(f, no);
+    fclose(f);
+}
+
+void buildJVMPost(FILE *f, struct ArvSint *no){
+    if(no == NULL) return;
+    buildJVMPost(f, no -> ptr1);
+    buildJVMPost(f, no -> ptr2);
+    buildJVMPost(f, no -> ptr3);
+
+    if(no -> op == OP_ADD){
+        fprintf(f, "%cadd\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+    } else if(no -> op == OP_SUB){
+        fprintf(f, "%csub\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+    } else if(no -> op == OP_MULT){
+        fprintf(f, "%cmul\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+    } else if(no -> op == OP_DIV){
+        fprintf(f, "%cdiv\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+    } else if(no -> op == OP_INTTOFLOAT){
+        fprintf(f, "i2f\n");
+    } else if(no -> op == OP_FLOATTOINT){
+        fprintf(f, "f2i\n");
+    } else if(no -> tipo == TIPO_ID){
+        fprintf(f, "%cload %d\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> value.id));
+    } else if(no -> tipo == TIPO_INT){
+        if(no -> value.intV >= 0 && no -> value.intV <= 5){
+            fprintf(f, "iconst_%d\n", no -> value.intV);
+        } else if(no -> value.intV >= -128 && no -> value.intV <= 127){
+            fprintf(f, "bipush %d\n", no -> value.intV);
+        } else {
+            fprintf(f, "lcd %d\n", no -> value.intV);
+        }
+    } else if(no -> tipo == TIPO_FLOAT){
+        if(no -> value.floatV == 0.0 || no -> value.floatV == 1.0 || no -> value.floatV == 2.0){
+            fprintf(f, "fconst_%d\n", no -> value.floatV);
+        } else {
+            fprintf(f, "lcd %f\n", no -> value.floatV);
+        }
+    }
+
+}
+
+void buildJVMUtil(FILE *f, struct ArvSint *no){
+    if(no == NULL) return;
+    if(no -> op == OP_ATRIB){
+        buildJVMPost(f, no -> ptr2);
+        fprintf(f, "%cstore %d\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> ptr1 -> value.id));
+    } else {
+        buildJVMUtil(f, no -> ptr3);
+        buildJVMUtil(f, no -> ptr2);
+        buildJVMUtil(f, no -> ptr1);
+    }
+}
+
+void createGraphviz(struct ArvSint *no){
+    FILE *f = fopen("graph.dot", "w");
+    int cnt = 0;
+    fprintf(f, "digraph G {\n");
+    createGraphvizMarca(f, no, &cnt);
+    createGraphvizFinaliza(f, no);
+    fprintf(f, "}\n");
+    fclose(f);
+}
+void createGraphvizMarca(FILE *f, struct ArvSint *no, int *cnt){
+    if(no == NULL) return;
+    (*cnt)++;
+    no -> graphID = *cnt;
+    if(no -> op == -1){
+        if(no -> tipo == TIPO_INT){
+            fprintf(f, "\t%d [label = \"%d\"];\n", *cnt, no -> value.intV);
+        } else if(no -> tipo == TIPO_FLOAT){
+            fprintf(f, "\t%d [label = \"%.2f\"];\n", *cnt, no -> value.floatV);
+        } else if(no -> tipo == TIPO_ID){
+            fprintf(f, "\t%d [label = \"%s\"];\n", *cnt, no -> value.id);
+        } else {
+            fprintf(f, "\t%d [label = %s];\n", *cnt, no -> value.stringV);
+        }
+    } else if(no -> op != OP_ALEA){
+        fprintf(f, "\t%d [label = \"%s\"];\n", *cnt, printOperador(no -> op));
+    }
+    createGraphvizMarca(f, no -> ptr1, cnt);
+    createGraphvizMarca(f, no -> ptr2, cnt);
+    createGraphvizMarca(f, no -> ptr3, cnt);
+}
+void createGraphvizFinaliza(FILE *f, struct ArvSint *no){
+    if(no -> ptr1 != NULL){
+        fprintf(f, "\t%d -> %d;\n", no -> graphID, no -> ptr1 -> graphID);
+        createGraphvizFinaliza(f, no -> ptr1);
+    }
+    if(no -> ptr2 != NULL){
+        fprintf(f, "\t%d -> %d;\n", no -> graphID, no -> ptr2 -> graphID);
+        createGraphvizFinaliza(f, no -> ptr2);
+    }
+    if(no -> ptr3 != NULL){
+        fprintf(f, "\t%d -> %d;\n", no -> graphID, no -> ptr3 -> graphID);
+        createGraphvizFinaliza(f, no -> ptr3);
     }
 }
 
@@ -163,6 +364,7 @@ int hash(char *id){
 
 int consultaTipoTabSimb(char *nome){
     int h = hash(nome);
+    if(tabSimb[h].lista == NULL) return -1;
     NoLDDE *no = tabSimb[h].lista -> inicioLista;
     while(no != NULL){
         stuff *aux = (stuff *)no -> dados;
@@ -171,6 +373,20 @@ int consultaTipoTabSimb(char *nome){
         }
         no = no -> prox;
     }
+    return -1;
+}
+int consultaPosiTabSimb(char *nome){
+    int h = hash(nome);
+    if(tabSimb[h].lista == NULL) return -1;
+    NoLDDE *no = tabSimb[h].lista -> inicioLista;
+    while(no != NULL){
+        stuff *aux = (stuff *)no -> dados;
+        if(strcmp(aux -> id, nome) == 0){
+            return aux -> posicao;
+        }
+        no = no -> prox;
+    }
+    return -1;
 }
 
 void insereTabSimbolo(LDDE *p, int tipo){
@@ -233,9 +449,22 @@ void printTabSimb(){
             NoLDDE * no = tabSimb[i].lista -> inicioLista;
             while(no != NULL) {
                 stuff *aux = (stuff *)no->dados;
-                printf("%-15s%-15s-----------\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")));
+                printf("%-15s%-15s%d\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")), aux -> posicao);
                 no = no->prox;
             }
         }
     }
+}
+
+int ehFloat(char *num){
+    char *aux = num;
+    int f = 0;
+    while(*aux != '\0'){
+        if(*aux == '.'){
+            f = 1;
+            break;
+        }
+        aux++;
+    }
+    return f;
 }

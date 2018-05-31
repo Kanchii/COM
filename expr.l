@@ -25,9 +25,9 @@ literal (\".*\")
 "read" {return TREAD;}
 "while" {return TWHILE;}
 "void" {return TVOID;}
-"int" {yylval.tipo = TIPO_INT; return TINT;}
+"int" {return TINT;}
 "String" {return TSTRING;}
-"float" {yylval.tipo = TIPO_FLOAT; return TFLOAT;}
+"float" {return TFLOAT;}
 "return" {return TRETURN;}
 ">=" {return TMAIORIG;}
 "<=" {return TMENORIG;}
@@ -39,7 +39,7 @@ literal (\".*\")
 "&&" {return TAND;}
 "||" {return TOR;}
 "!" {return TNOT;}
-{literal} {return TLITERAL;}
-{num}	{strcpy(yylval.id, yytext); return TNUM;}
-{id}  {strncpy(yylval.id, yytext, 10); return TID;}
+{literal} {yylval.tipo = TIPO_STRING; yylval.value.stringV = (char *)malloc(sizeof(char) * strlen(yytext)); strcpy(yylval.value.stringV, yytext); return TLITERAL;}
+{num}	{if(ehFloat(yytext)){yylval.tipo = TIPO_FLOAT; yylval.value.floatV = atof(yytext);} else {yylval.tipo = TIPO_INT; yylval.value.intV = atoi(yytext);}; return TNUM;}
+{id}  {yylval.tipo = TIPO_ID; strncpy(yylval.value.id, yytext, 10); return TID;}
 . {printf("Erro léxico na linha %d\n", linha); exit(0);}

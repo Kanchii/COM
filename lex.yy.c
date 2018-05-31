@@ -900,7 +900,7 @@ YY_RULE_SETUP
 case 19:
 YY_RULE_SETUP
 #line 28 "expr.l"
-{yylval.tipo = TIPO_INT; return TINT;}
+{return TINT;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
@@ -910,7 +910,7 @@ YY_RULE_SETUP
 case 21:
 YY_RULE_SETUP
 #line 30 "expr.l"
-{yylval.tipo = TIPO_FLOAT; return TFLOAT;}
+{return TFLOAT;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
@@ -970,17 +970,17 @@ YY_RULE_SETUP
 case 33:
 YY_RULE_SETUP
 #line 42 "expr.l"
-{return TLITERAL;}
+{yylval.tipo = TIPO_STRING; yylval.value.stringV = (char *)malloc(sizeof(char) * strlen(yytext)); strcpy(yylval.value.stringV, yytext); return TLITERAL;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 43 "expr.l"
-{strcpy(yylval.id, yytext); return TNUM;}
+{if(ehFloat(yytext)){yylval.tipo = TIPO_FLOAT; yylval.value.floatV = atof(yytext);} else {yylval.tipo = TIPO_INT; yylval.value.intV = atoi(yytext);}; return TNUM;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 44 "expr.l"
-{strncpy(yylval.id, yytext, 10); return TID;}
+{yylval.tipo = TIPO_ID; strncpy(yylval.value.id, yytext, 10); return TID;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP

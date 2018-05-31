@@ -16,5 +16,5 @@ int fat(int n)
 	print("Valor:");
 	read(n);
 	x = fat(n);
-	print (x);
+	print(x);
 }

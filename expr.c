@@ -4,8 +4,7 @@
 
 extern FILE *yyin;
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
 	int tam = strlen(argv[1]);
 	char *path = (char *)malloc(sizeof(char) * (tam + 1));
 	strcpy(path, argv[1]);
