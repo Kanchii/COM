@@ -264,13 +264,13 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
     buildJVMPost(f, no -> ptr3);
 
     if(no -> op == OP_ADD){
-        fprintf(f, "%cadd\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "%cadd\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_SUB){
-        fprintf(f, "%csub\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "%csub\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_MULT){
-        fprintf(f, "%cmul\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "%cmul\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_DIV){
-        fprintf(f, "%cdiv\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "%cdiv\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_INTTOFLOAT){
         fprintf(f, "i2f\n");
     } else if(no -> op == OP_FLOATTOINT){
@@ -283,13 +283,13 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
         } else if(no -> value.intV >= -128 && no -> value.intV <= 127){
             fprintf(f, "bipush %d\n", no -> value.intV);
         } else {
-            fprintf(f, "lcd %d\n", no -> value.intV);
+            fprintf(f, "ldc %d\n", no -> value.intV);
         }
     } else if(no -> tipo == TIPO_FLOAT){
         if(no -> value.floatV == 0.0 || no -> value.floatV == 1.0 || no -> value.floatV == 2.0){
-            fprintf(f, "fconst_%d\n", no -> value.floatV);
+            fprintf(f, "fconst_%d\n", (int)no -> value.floatV);
         } else {
-            fprintf(f, "lcd %f\n", no -> value.floatV);
+            fprintf(f, "ldc %f\n", no -> value.floatV);
         }
     }
 

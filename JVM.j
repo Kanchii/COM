@@ -1,6 +1,11 @@
-bipush 10
+iconst_1
 istore 1
-iload 1
-iconst_4
-imul
+bipush 20
 istore 2
+iload 2
+iload 1
+iconst_2
+imul
+iadd
+i2f
+fstore 3
