@@ -77,8 +77,8 @@ Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
    | TRETURN TLITERAL TPEV {$$.arvSint = criaNo(OP_RETURN, criaNoV(TIPO_STRING, $2.value), NULL, NULL);}
    ;
 
- CmdSe: TIF TAPAR ExprLogica TFPAR Bloco {$$.arvSint = criaNo(OP_IF, $3.arvSint, $5.arvSint, NULL);}
- | TIF TAPAR ExprLogica TFPAR Bloco TELSE Bloco {$$.arvSint = criaNo(OP_IF, $3.arvSint, $5.arvSint, $7.arvSint);}
+ CmdSe: TIF TAPAR ExprLogica TFPAR Bloco {$$.arvSint = criaNo(OP_IF, $5.arvSint, $3.arvSint, NULL);}
+ | TIF TAPAR ExprLogica TFPAR Bloco TELSE Bloco {$$.arvSint = criaNo(OP_IF, $7.arvSint, $5.arvSint, $3.arvSint);}
  ;
 
  CmdEnquanto: TWHILE TAPAR ExprLogica TFPAR Bloco {$$.arvSint = criaNo(OP_WHILE, $3.arvSint, $5.arvSint, NULL);}
@@ -133,13 +133,14 @@ ExprRelacional: ExprAritmetica TMENOR ExprAritmetica {$$.arvSint = criaNo(OP_MEN
 				| ExprAritmetica TDIF ExprAritmetica {$$.arvSint = criaNo(OP_DIF, $1.arvSint, $3.arvSint, NULL);}
 				;
 
-ExprLogica: ExprLogica TAND ExprLogicaT2 {$$.arvSint = criaNo(OP_AND, $2.arvSint, NULL, NULL);}
+ExprLogica: ExprLogica TAND ExprLogicaT2 {$$.arvSint = criaNo(OP_AND, $1.arvSint, $3.arvSint, NULL);}
 					| ExprLogica TOR ExprLogicaT2 {$$.arvSint = criaNo(OP_OR, $1.arvSint, $3.arvSint, NULL);}
 					| ExprLogicaT2 {$$.arvSint = $1.arvSint;}
 					;
 
 ExprLogicaT2: TAPAR ExprLogica TFPAR {$$.arvSint = $2.arvSint;}
 			| TNOT ExprLogicaT2 {$$.arvSint = criaNo(OP_NOT, $2.arvSint, NULL, NULL);}
+			| TNOT ExprAritmetica {$$.arvSint = criaNo(OP_NOT, $2.arvSint, NULL, NULL);}
 			| ExprRelacional {$$.arvSint = $1.arvSint;}
 			;
 
