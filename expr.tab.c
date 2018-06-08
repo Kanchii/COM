@@ -1461,344 +1461,209 @@ yyreduce:
   case 33:
 #line 73 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[0]).arvSint;}
-#line 1461 "expr.tab.c" /* yacc.c:1646  */
+#line 1465 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
 #line 76 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_RETURN, (yyvsp[-1]).arvSint, NULL, NULL);}
-<<<<<<< HEAD
-#line 1467 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1465 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1471 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
 #line 77 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_RETURN, criaNoV(TIPO_STRING, (yyvsp[-1]).value), NULL, NULL);}
-<<<<<<< HEAD
-#line 1473 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1471 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1477 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
 #line 80 "expr.y" /* yacc.c:1646  */
-<<<<<<< HEAD
     {(yyval).arvSint = criaNo(OP_IF, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1479 "expr.tab.c" /* yacc.c:1646  */
-=======
-    {(yyval).arvSint = criaNo(OP_IF, (yyvsp[0]).arvSint, (yyvsp[-2]).arvSint, NULL);}
-#line 1477 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1483 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
 #line 81 "expr.y" /* yacc.c:1646  */
-<<<<<<< HEAD
     {(yyval).arvSint = criaNo(OP_IF, (yyvsp[-4]).arvSint, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint);}
-#line 1485 "expr.tab.c" /* yacc.c:1646  */
-=======
-    {(yyval).arvSint = criaNo(OP_IF, (yyvsp[0]).arvSint, (yyvsp[-2]).arvSint, (yyvsp[-4]).arvSint);}
-#line 1483 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1489 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
 #line 84 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_WHILE, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1491 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1489 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1495 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
 #line 87 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((yyvsp[-3]).tipo, (yyvsp[-3]).value), (yyvsp[-1]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1497 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1495 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1501 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
 #line 88 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((yyvsp[-3]).tipo, (yyvsp[-3]).value), criaNoV(TIPO_STRING, (yyvsp[-1]).value), NULL);}
-<<<<<<< HEAD
-#line 1503 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1501 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1507 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
 #line 92 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_PRINT, (yyvsp[-2]).arvSint, NULL, NULL);}
-<<<<<<< HEAD
-#line 1509 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1507 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1513 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
 #line 93 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_PRINT, criaNoV(TIPO_STRING, (yyvsp[-2]).value), NULL, NULL);}
-<<<<<<< HEAD
-#line 1515 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1513 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1519 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
 #line 96 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_READ, criaNoV(TIPO_ID, (yyvsp[-2]).value), NULL, NULL);}
-<<<<<<< HEAD
-#line 1521 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1519 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1525 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
 #line 112 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_ADD, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1527 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1525 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1531 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
 #line 113 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_SUB, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1533 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1531 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1537 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
 #line 114 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[0]).arvSint;}
-<<<<<<< HEAD
-#line 1539 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1537 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1543 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
 #line 117 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_MULT, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1545 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1543 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1549 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
 #line 118 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_DIV, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1551 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1549 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1555 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
 #line 119 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[0]).arvSint;}
-<<<<<<< HEAD
-#line 1557 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1555 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1561 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
 #line 122 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNoV((yyvsp[0]).tipo, (yyvsp[0]).value);}
-<<<<<<< HEAD
-#line 1563 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1561 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1567 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
 #line 123 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNoV((yyvsp[0]).tipo, (yyvsp[0]).value);}
-<<<<<<< HEAD
-#line 1569 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1567 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1573 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
 #line 124 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[-1]).arvSint;}
-<<<<<<< HEAD
-#line 1575 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1573 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1579 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
 #line 125 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_SUB, (yyvsp[0]).arvSint, NULL, NULL);}
-<<<<<<< HEAD
-#line 1581 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1579 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1585 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
 #line 128 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_MENOR, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1587 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1585 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1591 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
 #line 129 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_MAIOR, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1593 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1591 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1597 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
 #line 130 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_MENORIG, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1599 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1597 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1603 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
 #line 131 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_MAIORIG, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1605 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1603 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1609 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
 #line 132 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_CMP, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1611 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1609 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1615 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
 #line 133 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_DIF, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1617 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1615 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1621 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
 #line 136 "expr.y" /* yacc.c:1646  */
-<<<<<<< HEAD
-    {(yyval).arvSint = criaNo(OP_AND, (yyvsp[-1]).arvSint, NULL, NULL);}
-#line 1623 "expr.tab.c" /* yacc.c:1646  */
-=======
     {(yyval).arvSint = criaNo(OP_AND, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1621 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1627 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
 #line 137 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_OR, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-<<<<<<< HEAD
-#line 1629 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1627 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1633 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 70:
 #line 138 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[0]).arvSint;}
-<<<<<<< HEAD
-#line 1635 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1633 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1639 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
 #line 141 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[-1]).arvSint;}
-<<<<<<< HEAD
-#line 1641 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1639 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1645 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
 #line 142 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_NOT, (yyvsp[0]).arvSint, NULL, NULL);}
-<<<<<<< HEAD
-#line 1647 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1645 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1651 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
 #line 143 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_NOT, (yyvsp[0]).arvSint, NULL, NULL);}
-#line 1651 "expr.tab.c" /* yacc.c:1646  */
+#line 1657 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
 #line 144 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[0]).arvSint;}
-<<<<<<< HEAD
-#line 1653 "expr.tab.c" /* yacc.c:1646  */
+#line 1663 "expr.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1657 "expr.tab.c" /* yacc.c:1646  */
-=======
-#line 1657 "expr.tab.c" /* yacc.c:1646  */
-    break;
-
-
-#line 1661 "expr.tab.c" /* yacc.c:1646  */
->>>>>>> d81045fe0d71c52d633eeb7683e621da139483d3
+#line 1667 "expr.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

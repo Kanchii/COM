@@ -267,6 +267,8 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
         fprintf(f, "f2i\n");
     } else if(no -> tipo == TIPO_ID){
         fprintf(f, "%cload %d\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> value.id));
+    } else if(no -> tipo == TIPO_STRING){
+		fprintf(f, "lcd %s\n", no -> value.stringV);
     } else if(no -> tipo == TIPO_INT){
         if(no -> value.intV >= 0 && no -> value.intV <= 5){
             fprintf(f, "iconst_%d\n", no -> value.intV);
@@ -289,7 +291,11 @@ void buildJVMUtil(FILE *f, struct ArvSint *no){
     if(no -> op == OP_ATRIB){
         buildJVMPost(f, no -> ptr2);
         fprintf(f, "%cstore %d\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> ptr1 -> value.id));
-    } else {
+    } else if(no -> op == OP_PRINT){
+        fprintf(f, "getstatic java/lang/System/out Ljava/io/PrintStream;\n");
+        buildJVMPost(f, no -> ptr1);
+        fprintf(f, "invokevirtual java/io/PrintStream/println(%c)V\n", (no -> tipo == TIPO_FLOAT ? 'F' : 'I'));
+	} else {
         buildJVMUtil(f, no -> ptr3);
         buildJVMUtil(f, no -> ptr2);
         buildJVMUtil(f, no -> ptr1);

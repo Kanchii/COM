@@ -1,9 +1,11 @@
 {
 	int a, b;
-	float c;
+	int c;
 	a = 1;
 	b = 20;
 	c = b + a * 2;
-
+	
+	print(c);
+	
 	return 0;
 }
