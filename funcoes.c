@@ -287,7 +287,7 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
         }
     } else if(no -> tipo == TIPO_FLOAT){
         if(no -> value.floatV == 0.0 || no -> value.floatV == 1.0 || no -> value.floatV == 2.0){
-            fprintf(f, "fconst_%d\n", no -> value.floatV);
+            fprintf(f, "fconst_%d\n", (int)no -> value.floatV);
         } else {
             fprintf(f, "lcd %f\n", no -> value.floatV);
         }
