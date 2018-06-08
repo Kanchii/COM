@@ -1,0 +1,56 @@
+case IF:
+    lv = novoLabel();
+    lf = novoLabel();
+    gerarExpRel(r -> ptr1, lv, lf);
+    gravarLabel(lv);
+    gerar(r -> ptr2);
+    gravarLabel(lf);
+    break;
+case IF-ELSE:
+    lv = novoLabel();
+    lf = novoLabel();
+    laux = novoLabel();
+    gerarExpRel(r -> ptr1, lv, lf);
+    gravarLabel(lv);
+    gerar(r -> ptr2);
+    gerarGoto(laux);
+    gerarLabel(lf);
+    gerar(r -> ptr3);
+    break;
+case WHILE:
+    lv = novoLabel();
+    lf = novoLabel();
+    
+
+
+void gerarExprLR(AST *r, int lv, int lf){
+    switch(r -> cod){
+        case Menor:
+            gerar(r -> ptr1);
+            gerar(r -> ptr2);
+            if_icmplt lv
+            print(goto lf);
+            print(break);
+        case Maior:
+            gerar(r -> ptr1);
+            gerar(r -> ptr2);
+            print(if_icmpgt lv);
+            print(goto lf);
+            break;
+        case &&:
+            laux = novoLabel();
+            gerarExprLR(r -> ptr1, laux, lf);
+            gravarLabel(laux);
+            gerarExprLR(r -> ptr2, lv, lf);
+            break;
+        case ||:
+            laux = novoLabel();
+            gerarExprLR(r -> ptr1, lv, laux);
+            gravarLabel(laux);
+            gerarExprLR(r -> ptr2, lv, lf);
+            break;
+        case !:
+            gerarExprLR(r -> ptr1, lf, lv);
+            break;
+    }
+}

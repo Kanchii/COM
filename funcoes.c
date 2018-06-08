@@ -16,7 +16,6 @@ LDDE * listaCriar(unsigned long tamInfo) {
 
     return desc;
 }
-
 LDDE * listaInserir(LDDE *p, void *novo, int pos) {
     if(p == NULL){
         p = listaCriar(sizeof(novo));
@@ -53,7 +52,6 @@ LDDE * listaInserir(LDDE *p, void *novo, int pos) {
     }
     return p;
 }
-
 int listaBuscaInicio(LDDE *p, void *reg) {
     int ret = 0;
     if(p->inicioLista != NULL) {
@@ -62,7 +60,6 @@ int listaBuscaInicio(LDDE *p, void *reg) {
     }
     return ret;
 }
-
 int listaBuscaFim(LDDE *p, void *reg) {
     int ret = 0;
     if(p->fimLista != NULL) {
@@ -71,7 +68,6 @@ int listaBuscaFim(LDDE *p, void *reg) {
     }
     return ret;
 }
-
 int listaRemover(LDDE * p, NoLDDE * node) {
     if(p->inicioLista == p->fimLista && p->inicioLista != NULL){ // Lista com 1 elemento
         if(p->inicioLista == node) { // node para excluir = node inicio lista
@@ -112,7 +108,6 @@ int listaRemover(LDDE * p, NoLDDE * node) {
 
     return 0;
 }
-
 void destroi(LDDE **pp) {
     free(*pp);
     (*pp) = NULL;
@@ -127,12 +122,10 @@ struct ArvSint *createNodoConversor(int op, struct ArvSint *ptr){
     novoNodo -> ptr3 = NULL;
     return novoNodo;
 }
-
 int binaryOp(int op){
     return (op == OP_MAIORIG || op == OP_DIF || op == OP_MENORIG || op == OP_MAIOR || op == OP_SUB || op == OP_DIV ||
             op == OP_MULT || op == OP_ADD || op == OP_ATRIB);
 }
-
 struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, struct ArvSint *ptr3){
     struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
     tmp -> op = op;
@@ -169,7 +162,6 @@ struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, stru
     tmp -> ptr3 = ptr3;
     return tmp;
 }
-
 struct ArvSint * criaNoV(int tipo, UnionV v){
     struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
     tmp -> ptr1 = NULL;
@@ -180,7 +172,6 @@ struct ArvSint * criaNoV(int tipo, UnionV v){
     tmp -> value = v;
     return tmp;
 }
-
 char *printOperador(int op){
     switch (op) {
         case OP_ADD:
@@ -256,7 +247,6 @@ void buildJVM(struct ArvSint *no){
     buildJVMUtil(f, no);
     fclose(f);
 }
-
 void buildJVMPost(FILE *f, struct ArvSint *no){
     if(no == NULL) return;
     buildJVMPost(f, no -> ptr1);
@@ -264,13 +254,13 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
     buildJVMPost(f, no -> ptr3);
 
     if(no -> op == OP_ADD){
-        fprintf(f, "%cadd\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "%cadd\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_SUB){
-        fprintf(f, "%csub\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "%csub\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_MULT){
-        fprintf(f, "%cmul\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "%cmul\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_DIV){
-        fprintf(f, "%cdiv\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "%cdiv\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_INTTOFLOAT){
         fprintf(f, "i2f\n");
     } else if(no -> op == OP_FLOATTOINT){
@@ -283,18 +273,17 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
         } else if(no -> value.intV >= -128 && no -> value.intV <= 127){
             fprintf(f, "bipush %d\n", no -> value.intV);
         } else {
-            fprintf(f, "lcd %d\n", no -> value.intV);
+            fprintf(f, "ldc %d\n", no -> value.intV);
         }
     } else if(no -> tipo == TIPO_FLOAT){
         if(no -> value.floatV == 0.0 || no -> value.floatV == 1.0 || no -> value.floatV == 2.0){
             fprintf(f, "fconst_%d\n", (int)no -> value.floatV);
         } else {
-            fprintf(f, "lcd %f\n", no -> value.floatV);
+            fprintf(f, "ldc %f\n", no -> value.floatV);
         }
     }
 
 }
-
 void buildJVMUtil(FILE *f, struct ArvSint *no){
     if(no == NULL) return;
     if(no -> op == OP_ATRIB){
