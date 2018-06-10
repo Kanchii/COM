@@ -8,6 +8,8 @@ literal (\".*\")
 
 %%
 {ws}	{}
+"++" {return TAADD;}
+"--" {return TSSUB;}
 "+"	{return TADD;}
 "-"	{return TSUB;}
 "*"	{return TMUL;}
@@ -24,6 +26,7 @@ literal (\".*\")
 "print" {return TPRINT;}
 "read" {return TREAD;}
 "while" {return TWHILE;}
+"for" {return TFOR;}
 "void" {return TVOID;}
 "int" {return TINT;}
 "String" {return TSTRING;}
@@ -36,6 +39,10 @@ literal (\".*\")
 "==" {return TIGUAL;}
 "=" {return TATRIB;}
 "!=" {return TDIF;}
+"+=" {return TSINC;}
+"-=" {return TSDEC;}
+"*=" {return TSMUL;}
+"/=" {return TSDIV;}
 "&&" {return TAND;}
 "||" {return TOR;}
 "!" {return TNOT;}

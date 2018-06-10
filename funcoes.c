@@ -2,7 +2,9 @@
 
 #define MAX_HASH 113
 
-//Criar lista
+int label = 1;
+
+//Lista
 LDDE * listaCriar(unsigned long tamInfo) {
     LDDE *desc = (LDDE*) malloc(sizeof(LDDE));
 
@@ -113,6 +115,7 @@ void destroi(LDDE **pp) {
     (*pp) = NULL;
 }
 
+/* Arvore */
 struct ArvSint *createNodoConversor(int op, struct ArvSint *ptr){
     struct ArvSint *novoNodo = (struct ArvSint *)malloc(sizeof(struct ArvSint));
     novoNodo -> op = op;
@@ -123,14 +126,12 @@ struct ArvSint *createNodoConversor(int op, struct ArvSint *ptr){
     return novoNodo;
 }
 int binaryOp(int op){
-    return (op == OP_MAIORIG || op == OP_DIF || op == OP_MENORIG || op == OP_MAIOR || op == OP_SUB || op == OP_DIV ||
-            op == OP_MULT || op == OP_ADD || op == OP_ATRIB);
+    return (op == OP_SUB || op == OP_DIV || op == OP_MULT || op == OP_ADD || op == OP_ATRIB);
 }
 struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, struct ArvSint *ptr3){
     struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
     tmp -> op = op;
 
-    int f = 0;
     if(op == OP_ATRIB){
         int t1 = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : ptr1 -> tipo);
         int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : ptr2 -> tipo);
@@ -144,7 +145,6 @@ struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, stru
         int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : ptr2 -> tipo);
 
         if((t1 == TIPO_INT && t2 == TIPO_FLOAT) || (t1 == TIPO_FLOAT && t2 == TIPO_INT)){
-            f = 1;
             if(t1 == TIPO_INT){
                 ptr1 = createNodoConversor(OP_INTTOFLOAT, ptr1);
             } else {
@@ -153,13 +153,32 @@ struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, stru
         }
     }
     if(ptr1 != NULL){
-        tmp -> tipo = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : ptr1 -> tipo);
+		if(ptr2 != NULL){
+			int t1 = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : ptr1 -> tipo);
+			int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : ptr2 -> tipo);
+			if(t1 != t2){
+				tmp -> tipo = TIPO_FLOAT;
+			} else {
+				tmp -> tipo = t1;
+			}
+		} else {
+			tmp -> tipo = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : ptr1 -> tipo);
+		}
     } else {
         tmp -> tipo = OP_ALEA;
     }
     tmp -> ptr1 = ptr1;
     tmp -> ptr2 = ptr2;
     tmp -> ptr3 = ptr3;
+    return tmp;
+}
+struct ArvSint * cria4No(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, struct ArvSint *ptr3, struct ArvSint *ptr4){
+	struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
+    tmp -> op = op;
+    tmp -> ptr1 = ptr1;
+    tmp -> ptr2 = ptr2;
+    tmp -> ptr3 = ptr3;
+    tmp -> ptr4 = ptr4;
     return tmp;
 }
 struct ArvSint * criaNoV(int tipo, UnionV v){
@@ -172,6 +191,24 @@ struct ArvSint * criaNoV(int tipo, UnionV v){
     tmp -> value = v;
     return tmp;
 }
+struct ArvSint *criaConstNum(int tipo, float value){
+	struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
+	tmp -> ptr1 = NULL;
+    tmp -> ptr2 = NULL;
+    tmp -> ptr3 = NULL;
+    tmp -> op = -1;
+    tmp -> tipo = tipo;
+    UnionV v;
+    if(tipo == TIPO_INT){
+		v.intV = (int)value;
+	} else if(tipo == TIPO_FLOAT){
+		v.floatV = value;
+	}
+    tmp -> value = v;
+    return tmp;
+}
+
+/* Printa em pos ordem*/
 char *printOperador(int op){
     switch (op) {
         case OP_ADD:
@@ -208,12 +245,16 @@ char *printOperador(int op){
             return "!=";
         case OP_AND:
             return "&&";
+        case OP_CMP:
+			return "==";
         case OP_OR:
             return "||";
         case OP_NOT:
             return "!";
         case OP_WHILE:
             return "WHILE";
+        case OP_FOR:
+			return "FOR";
         default:
             return "?";
     }
@@ -225,6 +266,7 @@ void printPosOrdem(struct ArvSint *no){
     printPosOrdem(no -> ptr1);
     printPosOrdem(no -> ptr2);
     printPosOrdem(no -> ptr3);
+    printPosOrdem(no -> ptr4);
     if(no -> op == -1){
         if(no -> tipo == TIPO_INT){
             printf("%d -> ", no -> value.intV);
@@ -242,9 +284,29 @@ void printPosOrdem(struct ArvSint *no){
     }
 }
 
+/* JVM */
+void printInit(FILE *f){
+	fprintf(f, ".class public JVM\n");
+	fprintf(f, ".super java/lang/Object\n\n");
+
+	fprintf(f, ".method public <init>()V\n");
+	fprintf(f, "\taload_0\n\n");
+	fprintf(f, "\tinvokenonvirtual java/lang/Object/<init>()V\n");
+	fprintf(f, "\treturn\n");
+	fprintf(f, ".end method\n\n");
+	fprintf(f, ".method public static main([Ljava/lang/String;)V\n");
+	fprintf(f, "\t.limit stack 10\n");	
+	fprintf(f, "\t.limit locals 10\n");
+}
+void printEnd(FILE *f){
+	fprintf(f, "\treturn\n");
+	fprintf(f, ".end method\n");
+}
 void buildJVM(struct ArvSint *no){
     FILE *f = fopen("JVM.j", "w");
+    printInit(f);
     buildJVMUtil(f, no);
+    printEnd(f);
     fclose(f);
 }
 void buildJVMPost(FILE *f, struct ArvSint *no){
@@ -252,36 +314,37 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
     buildJVMPost(f, no -> ptr1);
     buildJVMPost(f, no -> ptr2);
     buildJVMPost(f, no -> ptr3);
+    buildJVMPost(f, no -> ptr4);
 
     if(no -> op == OP_ADD){
-        fprintf(f, "%cadd\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "\t%cadd\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_SUB){
-        fprintf(f, "%csub\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "\t%csub\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_MULT){
-        fprintf(f, "%cmul\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "\t%cmul\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_DIV){
-        fprintf(f, "%cdiv\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
+        fprintf(f, "\t%cdiv\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'));
     } else if(no -> op == OP_INTTOFLOAT){
-        fprintf(f, "i2f\n");
+        fprintf(f, "\ti2f\n");
     } else if(no -> op == OP_FLOATTOINT){
-        fprintf(f, "f2i\n");
+        fprintf(f, "\tf2i\n");
     } else if(no -> tipo == TIPO_ID){
-        fprintf(f, "%cload %d\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> value.id));
+        fprintf(f, "\t%cload %d\n", (consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> value.id));
     } else if(no -> tipo == TIPO_STRING){
-		fprintf(f, "lcd %s\n", no -> value.stringV);
+		fprintf(f, "\tldc %s\n", no -> value.stringV);
     } else if(no -> tipo == TIPO_INT){
         if(no -> value.intV >= 0 && no -> value.intV <= 5){
-            fprintf(f, "iconst_%d\n", no -> value.intV);
+            fprintf(f, "\ticonst_%d\n", no -> value.intV);
         } else if(no -> value.intV >= -128 && no -> value.intV <= 127){
-            fprintf(f, "bipush %d\n", no -> value.intV);
+            fprintf(f, "\tbipush %d\n", no -> value.intV);
         } else {
-            fprintf(f, "ldc %d\n", no -> value.intV);
+            fprintf(f, "\tldc %d\n", no -> value.intV);
         }
     } else if(no -> tipo == TIPO_FLOAT){
         if(no -> value.floatV == 0.0 || no -> value.floatV == 1.0 || no -> value.floatV == 2.0){
-            fprintf(f, "fconst_%d\n", (int)no -> value.floatV);
+            fprintf(f, "\tfconst_%d\n", (int)no -> value.floatV);
         } else {
-            fprintf(f, "ldc %f\n", no -> value.floatV);
+            fprintf(f, "\tldc %f\n", no -> value.floatV);
         }
     }
 
@@ -290,18 +353,156 @@ void buildJVMUtil(FILE *f, struct ArvSint *no){
     if(no == NULL) return;
     if(no -> op == OP_ATRIB){
         buildJVMPost(f, no -> ptr2);
-        fprintf(f, "%cstore %d\n", (no -> tipo == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> ptr1 -> value.id));
+        fprintf(f, "\t%cstore %d\n", (consultaTipoTabSimb(no -> ptr1 -> value.id) == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> ptr1 -> value.id));
     } else if(no -> op == OP_PRINT){
-        fprintf(f, "getstatic java/lang/System/out Ljava/io/PrintStream;\n");
+        fprintf(f, "\tgetstatic java/lang/System/out Ljava/io/PrintStream;\n");
         buildJVMPost(f, no -> ptr1);
-        fprintf(f, "invokevirtual java/io/PrintStream/println(%c)V\n", (no -> tipo == TIPO_FLOAT ? 'F' : 'I'));
+        fprintf(f, "\tinvokevirtual java/io/PrintStream/print(%s)V\n", (no -> tipo == TIPO_FLOAT ? "F" : (no -> tipo == TIPO_INT ? "I" : "Ljava/lang/String;")));
+	} else if(no -> op == OP_IF){
+		if(no -> ptr3 == NULL){
+			int lv = label++;
+			int lf = label++;
+			gerarExprLogRel(f, no -> ptr1, lv, lf);
+			fprintf(f, "F%d:\n", lv);
+			buildJVMUtil(f, no -> ptr2);
+			fprintf(f, "F%d:\n", lf);
+		} else {
+			int lv = label++;
+			int lf = label++;
+			int laux = label++;
+			gerarExprLogRel(f, no -> ptr1, lv, lf);
+			fprintf(f, "F%d:\n", lv);
+			buildJVMUtil(f, no -> ptr2);
+			fprintf(f, "\tgoto F%d\n", laux);
+			fprintf(f, "F%d:\n", lf);
+			buildJVMUtil(f, no -> ptr3);
+			fprintf(f, "F%d:\n", laux);
+		}
+	} else if(no -> op == OP_WHILE){
+		int lv = label++;
+		int lf = label++;
+		gerarExprLogRel(f, no -> ptr1, lv, lf);
+		fprintf(f, "F%d:\n", lv);
+		buildJVMUtil(f, no -> ptr2);
+		gerarExprLogRel(f, no -> ptr1, lv, lf);
+		fprintf(f, "F%d:\n", lf);
+	} else if(no -> op == OP_FOR){
+		buildJVMUtil(f, no -> ptr1);
+		int lv = label++;
+		int lf = label++;
+		gerarExprLogRel(f, no -> ptr2, lv, lf);
+		fprintf(f, "F%d:\n", lv);
+		buildJVMUtil(f, no -> ptr4);
+		buildJVMUtil(f, no -> ptr3);
+		gerarExprLogRel(f, no -> ptr2, lv, lf);
+		fprintf(f, "F%d:\n", lf);
 	} else {
         buildJVMUtil(f, no -> ptr3);
         buildJVMUtil(f, no -> ptr2);
         buildJVMUtil(f, no -> ptr1);
     }
 }
+int ehTipoFloat(struct ArvSint *no){
+	return (no -> tipo == TIPO_FLOAT || (no -> tipo == TIPO_ID && consultaTipoTabSimb(no -> value.id) == TIPO_FLOAT));
+}
+void gerarExprLogRel(FILE *f, struct ArvSint *no, int lv, int lf){
+	int laux;
+	switch(no -> op){
+		case OP_MENOR:
+			buildJVMPost(f, no -> ptr1);
+			if(ehTipoFloat(no -> ptr1)){
+				fprintf(f, "\tf2i\n");
+			}
+			buildJVMPost(f, no -> ptr2);
+			if(ehTipoFloat(no -> ptr2)){
+				fprintf(f, "\tf2i\n");
+			}
+			fprintf(f, "\tif_icmplt F%d\n", lv);
+			fprintf(f, "\tgoto F%d\n", lf);
+			break;
+		case OP_MAIOR:
+			buildJVMPost(f, no -> ptr1);
+			if(ehTipoFloat(no -> ptr1)){
+				fprintf(f, "\tf2i\n");
+			}
+			buildJVMPost(f, no -> ptr2);
+			
+			if(ehTipoFloat(no -> ptr2)){
+				fprintf(f, "\tf2i\n");
+			}
+			
+			printf("ptr1Tipo: %d\tptr2Tipo: %d\n", no -> ptr1 -> tipo, no -> ptr2 -> tipo);
+			
+			fprintf(f, "\tif_icmpgt F%d\n", lv);
+			fprintf(f, "\tgoto F%d\n", lf);
+			break;
+		case OP_MAIORIG:
+			buildJVMPost(f, no -> ptr1);
+			if(ehTipoFloat(no -> ptr1)){
+				fprintf(f, "\tf2i\n");
+			}
+			buildJVMPost(f, no -> ptr2);
+			if(ehTipoFloat(no -> ptr2)){
+				fprintf(f, "\tf2i\n");
+			}
+			fprintf(f, "\tif_icmpge F%d\n", lv);
+			fprintf(f, "\tgoto F%d\n", lf);
+			break;
+		case OP_MENORIG:
+			buildJVMPost(f, no -> ptr1);
+			if(ehTipoFloat(no -> ptr1)){
+				fprintf(f, "\tf2i\n");
+			}
+			buildJVMPost(f, no -> ptr2);
+			if(ehTipoFloat(no -> ptr2)){
+				fprintf(f, "\tf2i\n");
+			}
+			fprintf(f, "\tif_icmple F%d\n", lv);
+			fprintf(f, "\tgoto F%d\n", lf);
+			break;
+		case OP_CMP:
+			buildJVMPost(f, no -> ptr1);
+			if(ehTipoFloat(no -> ptr1)){
+				fprintf(f, "\tf2i\n");
+			}
+			buildJVMPost(f, no -> ptr2);
+			if(ehTipoFloat(no -> ptr2)){
+				fprintf(f, "\tf2i\n");
+			}
+			fprintf(f, "\tif_icmpeq F%d\n", lv);
+			fprintf(f, "\tgoto F%d\n", lf);
+			break;
+		case OP_DIF:
+			buildJVMPost(f, no -> ptr1);
+			if(ehTipoFloat(no -> ptr1)){
+				fprintf(f, "\tf2i\n");
+			}
+			buildJVMPost(f, no -> ptr2);
+			if(ehTipoFloat(no -> ptr2)){
+				fprintf(f, "\tf2i\n");
+			}
+			fprintf(f, "\tif_icmpne F%d\n", lv);
+			fprintf(f, "\tgoto F%d\n", lf);
+			break;
+		case OP_AND:
+			laux = label++;
+			gerarExprLogRel(f, no -> ptr1, laux, lf);
+			fprintf(f, "F%d:\n", laux);
+			gerarExprLogRel(f, no -> ptr2, lv, lf);
+			break;
+		case OP_OR:
+			laux = label++;
+			gerarExprLogRel(f, no -> ptr1, lv, laux);
+			fprintf(f, "F%d:\n", laux);
+			gerarExprLogRel(f, no -> ptr2, lv, lf);
+			break;
+		case OP_NOT:
+			gerarExprLogRel(f, no -> ptr1, lf, lv);
+			break;
+	}
+}
 
+/* Graphviz */
 void createGraphviz(struct ArvSint *no){
     FILE *f = fopen("graph.dot", "w");
     int cnt = 0;
@@ -331,6 +532,7 @@ void createGraphvizMarca(FILE *f, struct ArvSint *no, int *cnt){
     createGraphvizMarca(f, no -> ptr1, cnt);
     createGraphvizMarca(f, no -> ptr2, cnt);
     createGraphvizMarca(f, no -> ptr3, cnt);
+    createGraphvizMarca(f, no -> ptr4, cnt);
 }
 void createGraphvizFinaliza(FILE *f, struct ArvSint *no){
     if(no -> ptr1 != NULL){
@@ -345,8 +547,13 @@ void createGraphvizFinaliza(FILE *f, struct ArvSint *no){
         fprintf(f, "\t%d -> %d;\n", no -> graphID, no -> ptr3 -> graphID);
         createGraphvizFinaliza(f, no -> ptr3);
     }
+    if(no -> ptr4 != NULL){
+		fprintf(f, "\t%d -> %d;\n", no -> graphID, no -> ptr4 -> graphID);
+        createGraphvizFinaliza(f, no -> ptr4);
+	}
 }
 
+/* Tabela de Simbolos */
 int hash(char *id){
     int n, i;
 	int hash = n = strlen(id);
@@ -356,7 +563,6 @@ int hash(char *id){
 	}
 	return hash;
 }
-
 int consultaTipoTabSimb(char *nome){
     int h = hash(nome);
     if(tabSimb[h].lista == NULL) return -1;
@@ -383,7 +589,6 @@ int consultaPosiTabSimb(char *nome){
     }
     return -1;
 }
-
 void insereTabSimbolo(LDDE *p, int tipo){
     NoLDDE * no = p -> inicioLista;
     while(no != NULL) {
@@ -403,7 +608,6 @@ void insereTabSimbolo(LDDE *p, int tipo){
         no = no->prox;
     }
 }
-
 void listaInserirTabSimb(LDDE **pp, void *novo){
     if(*pp == NULL){
         *pp = listaCriar(sizeof(stuff));
@@ -435,7 +639,6 @@ void listaInserirTabSimb(LDDE **pp, void *novo){
         }
     }
 }
-
 void printTabSimb(){
     int i = 0;
     printf("%-10s%9s%20s\n", "ID", "Tipo", "Posicao");
@@ -451,6 +654,7 @@ void printTabSimb(){
     }
 }
 
+/* Ver se o numero e float ou int */
 int ehFloat(char *num){
     char *aux = num;
     int f = 0;

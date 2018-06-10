@@ -31,10 +31,13 @@
 #define OP_NOT 19
 #define OP_WHILE 20
 #define OP_FLOATTOINT 21
+#define OP_FOR 22
 #define OP_ALEA 100
 
 #define MAX_HASH 113
 #define MAX_STR_SIZE 11
+
+extern int label;
 
 typedef struct noLDDE {
     void *dados;
@@ -75,7 +78,7 @@ struct ArvSint {
     int tipo;
     int graphID;
     UnionV value;
-	struct ArvSint *ptr1, *ptr2, *ptr3;
+	struct ArvSint *ptr1, *ptr2, *ptr3, *ptr4;
 };
 
 struct TabSimb tabSimb[MAX_HASH];
@@ -100,16 +103,22 @@ int binaryOp(int op);
 
 /* Nodos da arvore sintatica */
 struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, struct ArvSint *ptr3);
+struct ArvSint * cria4No(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, struct ArvSint *ptr3, struct ArvSint *ptr4);
 struct ArvSint * criaNoV(int tipo, UnionV v);
 struct ArvSint *createNodoConversor(int op, struct ArvSint *ptr);
+struct ArvSint *criaConstNum(int tipo, float value);
 
 /* Percorrer arvore pos ordem */
 char *printOperador(int op);
 void printPosOrdem(struct ArvSint *no);
 
 /* JVM */
+void printInit(FILE *f);
+void printEnd(FILE *f);
 void buildJVM(struct ArvSint *no);
 void buildJVMUtil(FILE *f, struct ArvSint *no);
+void buildJVMPost(FILE *f, struct ArvSint *no);
+void gerarExprLogRel(FILE *f, struct ArvSint *no, int lv, int lf);
 
 /* Graphviz */
 void createGraphviz(struct ArvSint *no);

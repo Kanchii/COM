@@ -9,7 +9,7 @@ int pos = 1;
 
 %token TADD TMUL TSUB TDIV TAPAR TFPAR TNUM TMENOR TMAIOR TMENORIG TMAIORIG TIGUAL TDIF
 %token TAND TOR TNOT TID TACH TFCH TVOID TINT TSTRING TFLOAT TRETURN TPEV TATRIB TIF TWHILE
-%token TELSE TPRINT TREAD TLITERAL TVIR
+%token TELSE TPRINT TREAD TLITERAL TVIR TSINC TSDEC TSMUL TSDIV TAADD TSSUB TFOR
 %%
 
 Linha: Programa {printTabSimb(); printf("\n\n"); buildJVM($1.arvSint); createGraphviz($1.arvSint); printf("\n\n\tSUCESSO\n"); exit(0);}
@@ -66,7 +66,8 @@ ListaCmd: ListaCmd Comando {$$.arvSint = criaNo(OP_ALEA, $2.arvSint, $1.arvSint,
 
 Comando: CmdSe {$$.arvSint = $1.arvSint;}
 	   | CmdEnquanto {$$.arvSint = $1.arvSint;}
-	   | CmdAtrib {$$.arvSint = $1.arvSint;}
+	   | CmdFor
+	   | CmdAtrib TPEV {$$.arvSint = $1.arvSint;}
 	   | CmdEscrita {$$.arvSint = $1.arvSint;}
 	   | CmdLeitura {$$.arvSint = $1.arvSint;}
 	   | ChamadaProc
@@ -84,11 +85,20 @@ CmdSe: TIF TAPAR ExprLogica TFPAR Bloco {$$.arvSint = criaNo(OP_IF, $3.arvSint, 
 CmdEnquanto: TWHILE TAPAR ExprLogica TFPAR Bloco {$$.arvSint = criaNo(OP_WHILE, $3.arvSint, $5.arvSint, NULL);}
        	   ;
 
-CmdAtrib: TID TATRIB ExprAritmetica TPEV {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), $3.arvSint, NULL);}
-	    | TID TATRIB TLITERAL TPEV {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNoV(TIPO_STRING, $3.value), NULL);}
-	    | TID TATRIB ChamadaProc TPEV
-	    ;
+CmdFor: TFOR TAPAR CmdAtrib TPEV ExprLogica TPEV CmdAtrib TFPAR Bloco {$$.arvSint = cria4No(OP_FOR, $3.arvSint, $5.arvSint, $7.arvSint, $9.arvSint);}
+	  ;
 
+CmdAtrib: TID TATRIB ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), $3.arvSint, NULL);}
+	    | TID TATRIB TLITERAL {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNoV(TIPO_STRING, $3.value), NULL);}
+	    | TID TATRIB ChamadaProc
+	    | TID TSINC ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_ADD, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
+	    | TID TSDEC ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_SUB, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
+	    | TID TSMUL ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_MULT, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
+	    | TID TSDIV ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_DIV, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
+	    | TID TAADD {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_ADD, criaNoV($1.tipo, $1.value), criaConstNum(TIPO_INT, 1), NULL), NULL);}
+	    | TID TSSUB {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_SUB, criaNoV($1.tipo, $1.value), criaConstNum(TIPO_INT, 1), NULL), NULL);}
+		;
+		 
 CmdEscrita: TPRINT TAPAR ExprAritmetica TFPAR TPEV {$$.arvSint = criaNo(OP_PRINT, $3.arvSint, NULL, NULL);}
 	      | TPRINT TAPAR TLITERAL TFPAR TPEV {$$.arvSint = criaNo(OP_PRINT, criaNoV(TIPO_STRING, $3.value), NULL, NULL);}
 	      ;

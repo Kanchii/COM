@@ -9,4 +9,9 @@ fig:
 	dot -T$(FIG_OUT) graph.dot -o graph.$(FIG_OUT)
 	eog graph.$(FIG_OUT)
 
+jasmin:
+	./a.out $(i)
+	java -jar jasmin.jar JVM.j
+	java JVM
+
 .PHONY: all fig
