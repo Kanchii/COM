@@ -86,6 +86,7 @@ struct TabSimb tabSimb[MAX_HASH];
 struct Atributos {
 	int tipo;
     UnionV value;
+    LDDE *listaTipos;
 	LDDE *listaID;
 	struct ArvSint *arvSint;
 };
@@ -93,6 +94,7 @@ struct Atributos {
 /* Lista usada para criar a tabela de simbolos */
 LDDE * listaCriar(unsigned long tamInfo);
 LDDE * listaInserir(LDDE *p, void *novo, int pos);
+LDDE * listaInserir2(LDDE *p, void *novo);
 int listaBuscaInicio(LDDE *p, void *reg);
 int listaBuscaElemento(LDDE *p, void *reg, void *dest);
 int listaBuscaFim(LDDE *p, void *reg);

@@ -14,6 +14,7 @@ LDDE * listaCriar(unsigned long tamInfo) {
         desc->inicioLista = NULL;
         desc->fimLista    = NULL;
         desc->tamInfo     = tamInfo;
+        // printf("%d\n", tamInfo);
     }
 
     return desc;
@@ -31,6 +32,40 @@ LDDE * listaInserir(LDDE *p, void *novo, int pos) {
             strncpy(tmp -> id, novo, 10);
             tmp -> posicao = pos;
             memcpy(temp->dados, tmp, p->tamInfo);
+            temp->prox = NULL;
+            if(p->inicioLista == NULL && p->fimLista == NULL) {
+                temp->ant = NULL;
+                p->fimLista    = temp;
+                p->inicioLista = temp;
+            } else if(p->inicioLista == p->fimLista) {
+                temp->ant  = p->inicioLista;
+                temp->prox = NULL;
+                p->fimLista = temp;
+                p->inicioLista->prox = p->fimLista;
+            } else {
+                temp->ant   = p->fimLista;
+                temp->prox  = NULL;
+                p->fimLista->prox = temp;
+                p->fimLista = temp;
+            }
+        }
+        else{
+            free(temp);
+        }
+    }
+    return p;
+}
+
+LDDE * listaInserir2(LDDE *p, void *novo){
+    if(p == NULL){
+        p = listaCriar(sizeof(novo));
+    }
+
+    NoLDDE *temp;
+
+    if((temp = (NoLDDE*) malloc(sizeof(NoLDDE))) != NULL) {
+        if((temp->dados = (void*) malloc(p->tamInfo)) != NULL) {
+            memcpy(temp->dados, novo, p->tamInfo);
             temp->prox = NULL;
             if(p->inicioLista == NULL && p->fimLista == NULL) {
                 temp->ant = NULL;
@@ -295,7 +330,7 @@ void printInit(FILE *f){
 	fprintf(f, "\treturn\n");
 	fprintf(f, ".end method\n\n");
 	fprintf(f, ".method public static main([Ljava/lang/String;)V\n");
-	fprintf(f, "\t.limit stack 10\n");	
+	fprintf(f, "\t.limit stack 10\n");
 	fprintf(f, "\t.limit locals 10\n");
 }
 void printEnd(FILE *f){
@@ -426,13 +461,13 @@ void gerarExprLogRel(FILE *f, struct ArvSint *no, int lv, int lf){
 				fprintf(f, "\tf2i\n");
 			}
 			buildJVMPost(f, no -> ptr2);
-			
+
 			if(ehTipoFloat(no -> ptr2)){
 				fprintf(f, "\tf2i\n");
 			}
-			
+
 			printf("ptr1Tipo: %d\tptr2Tipo: %d\n", no -> ptr1 -> tipo, no -> ptr2 -> tipo);
-			
+
 			fprintf(f, "\tif_icmpgt F%d\n", lv);
 			fprintf(f, "\tgoto F%d\n", lf);
 			break;

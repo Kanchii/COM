@@ -1,10 +1,8 @@
-int fat(int n)
-{
+int fat(int n){
 	String f;
 
 	f = 1;
-	while(n>0)
-	{
+	while(n > 0){
 		f = f * n;
 		n = n - 1;
 	}
@@ -13,8 +11,8 @@ int fat(int n)
 {
 	int n, x;
 
-	print("Valor:");
-	read(n);
-	x = fat(n);
+	print("Valor: ");
+	n = 5;
+	x = 1 + fat(n);
 	print(x);
 }

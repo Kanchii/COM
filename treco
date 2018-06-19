@@ -20,7 +20,7 @@ case IF-ELSE:
 case WHILE:
     lv = novoLabel();
     lf = novoLabel();
-    
+
 
 
 void gerarExprLR(AST *r, int lv, int lf){
@@ -54,3 +54,39 @@ void gerarExprLR(AST *r, int lv, int lf){
             break;
     }
 }
+
+
+################################################################################################################################
+Funções:
+
+int fat(int n){
+    if(n == 0){
+        return 1;
+    }
+    return n * fat(n - 1);
+}
+{
+    int x;
+    x = fat(5);
+}
+
+------------------------------------------
+iconst_5
+invokestatic fat(I)I
+
+#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@
+    iload 0
+    iconst_0
+    if_icmpeq L1
+    goto L2
+L1:
+    iconst_1
+    return
+L2:
+    iload 0
+    iload 0
+    iconst_1
+    isub
+    invokestatic fat(I)I
+    imul
+    return

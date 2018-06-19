@@ -22,9 +22,12 @@ Programa: ListaFuncoes BlocoPrincipal {$$.arvSint = $2.arvSint;}
 ListaFuncoes: ListaFuncoes Funcao
 	        | Funcao
 	        ;
-Funcao: TipoRetorno TID TAPAR DeclParametros TFPAR BlocoPrincipal
-	  | TipoRetorno TID TAPAR TFPAR BlocoPrincipal
+Funcao: DeclFuncao BlocoPrincipal
 	  ;
+
+DeclFuncao: TipoRetorno TID TAPAR DeclParametros TFPAR
+		  | TipoRetorno TID TAPAR TFPAR
+		  ;
 
 TipoRetorno: Tipo
 	       | TVOID
@@ -66,8 +69,8 @@ ListaCmd: ListaCmd Comando {$$.arvSint = criaNo(OP_ALEA, $2.arvSint, $1.arvSint,
 
 Comando: CmdSe {$$.arvSint = $1.arvSint;}
 	   | CmdEnquanto {$$.arvSint = $1.arvSint;}
-	   | CmdFor
-	   | CmdAtrib TPEV {$$.arvSint = $1.arvSint;}
+	   | CmdFor {$$.arvSint = $1.arvSint;}
+	   | CmdAtrib {$$.arvSint = $1.arvSint;}
 	   | CmdEscrita {$$.arvSint = $1.arvSint;}
 	   | CmdLeitura {$$.arvSint = $1.arvSint;}
 	   | ChamadaProc
@@ -88,17 +91,17 @@ CmdEnquanto: TWHILE TAPAR ExprLogica TFPAR Bloco {$$.arvSint = criaNo(OP_WHILE, 
 CmdFor: TFOR TAPAR CmdAtrib TPEV ExprLogica TPEV CmdAtrib TFPAR Bloco {$$.arvSint = cria4No(OP_FOR, $3.arvSint, $5.arvSint, $7.arvSint, $9.arvSint);}
 	  ;
 
-CmdAtrib: TID TATRIB ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), $3.arvSint, NULL);}
-	    | TID TATRIB TLITERAL {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNoV(TIPO_STRING, $3.value), NULL);}
-	    | TID TATRIB ChamadaProc
-	    | TID TSINC ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_ADD, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
-	    | TID TSDEC ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_SUB, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
-	    | TID TSMUL ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_MULT, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
-	    | TID TSDIV ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_DIV, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
-	    | TID TAADD {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_ADD, criaNoV($1.tipo, $1.value), criaConstNum(TIPO_INT, 1), NULL), NULL);}
-	    | TID TSSUB {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_SUB, criaNoV($1.tipo, $1.value), criaConstNum(TIPO_INT, 1), NULL), NULL);}
+CmdAtrib: TID TATRIB ExprAritmetica TPEV {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), $3.arvSint, NULL);}
+	    | TID TATRIB TLITERAL TPEV {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNoV(TIPO_STRING, $3.value), NULL);}
+	    | TID TATRIB ChamadaProc TPEV
+	    | TID TSINC ExprAritmetica TPEV {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_ADD, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
+	    | TID TSDEC ExprAritmetica TPEV {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_SUB, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
+	    | TID TSMUL ExprAritmetica TPEV {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_MULT, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
+	    | TID TSDIV ExprAritmetica TPEV {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_DIV, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
+	    | TID TAADD TPEV {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_ADD, criaNoV($1.tipo, $1.value), criaConstNum(TIPO_INT, 1), NULL), NULL);}
+	    | TID TSSUB TPEV {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_SUB, criaNoV($1.tipo, $1.value), criaConstNum(TIPO_INT, 1), NULL), NULL);}
 		;
-		 
+
 CmdEscrita: TPRINT TAPAR ExprAritmetica TFPAR TPEV {$$.arvSint = criaNo(OP_PRINT, $3.arvSint, NULL, NULL);}
 	      | TPRINT TAPAR TLITERAL TFPAR TPEV {$$.arvSint = criaNo(OP_PRINT, criaNoV(TIPO_STRING, $3.value), NULL, NULL);}
 	      ;
@@ -113,10 +116,10 @@ ChamadaFuncao: TID TAPAR ListaParametros TFPAR
 	         | TID TAPAR TFPAR
 	         ;
 
-ListaParametros: ListaParametros TVIR ExprAritmetica
-	           | ListaParametros TVIR TLITERAL
-	           | ExprAritmetica
-	           | TLITERAL
+ListaParametros: ListaParametros TVIR ExprAritmetica {$$.listaTipos = listaInserir2($1.listaTipos, (void *)&$3.tipo);}
+	           | ListaParametros TVIR TLITERAL {$$.listaTipos = listaInserir2($1.listaTipos, (void *)TIPO_STRING);}
+	           | ExprAritmetica {$$.listaTipos = listaCriar(sizeof(int)); $$.listaTipos = listaInserir2($$.listaTipos, (void *)&$1.tipo);}
+	           | TLITERAL {$$.listaTipos = listaCriar(sizeof(int)); $$.listaTipos = listaInserir2($$.listaTipos, (void *)TIPO_STRING);}
 	           ;
 
 ExprAritmetica: ExprAritmetica TADD Termo {$$.arvSint = criaNo(OP_ADD, $1.arvSint, $3.arvSint, NULL);}
