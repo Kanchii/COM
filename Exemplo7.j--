@@ -1,0 +1,15 @@
+{
+	int a, b;
+	a = 15;
+	b = 200;
+	
+	if(a > b && a != 0){
+		print("A eh maior e valor: ");
+		print(a);
+	} else {
+		print("B eh maior e valor: ");
+		print(b);
+	}
+
+	return 0;
+}

@@ -90,3 +90,8 @@ L2:
     invokestatic fat(I)I
     imul
     return
+
+############################################
+Criar uma lista para cada funcão e então criar uma tabela para aquela funcao e depois construir o codigo
+Salvar no final em uma tabela o nome da funcao, parametros e tipo de retorno para usar sempre que o usuario
+for chamar uma funcao

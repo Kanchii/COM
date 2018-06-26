@@ -13,6 +13,6 @@ int fat(int n){
 
 	print("Valor: ");
 	n = 5;
-	x = 1 + fat(n);
+	x = fat(n);
 	print(x);
 }
