@@ -11,32 +11,19 @@
 .method public static main([Ljava/lang/String;)V
 	.limit stack 10
 	.limit locals 10
-	iconst_5
-	istore 1
 	iconst_1
 	istore 1
-	iload 1
-	iconst_5
-	if_icmple F1
-	goto F2
-F1:
-	getstatic java/lang/System/out Ljava/io/PrintStream;
-	ldc "Teste: "
-	invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V
-	getstatic java/lang/System/out Ljava/io/PrintStream;
-	iload 1
-	invokevirtual java/io/PrintStream/print(I)V
-	getstatic java/lang/System/out Ljava/io/PrintStream;
-	ldc "\n"
-	invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V
 	iload 1
 	iconst_1
 	iadd
 	istore 1
 	iload 1
-	iconst_5
-	if_icmple F1
-	goto F2
-F2:
+	istore 2
+	getstatic java/lang/System/out Ljava/io/PrintStream;
+	iload 2
+	invokevirtual java/io/PrintStream/print(I)V
+	getstatic java/lang/System/out Ljava/io/PrintStream;
+	ldc "\n"
+	invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V
 	return
 .end method

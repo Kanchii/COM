@@ -352,7 +352,12 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
 void buildJVMUtil(FILE *f, struct ArvSint *no){
     if(no == NULL) return;
     if(no -> op == OP_ATRIB){
-        buildJVMPost(f, no -> ptr2);
+		if(no -> ptr2 -> op == OP_ATRIB){
+			buildJVMUtil(f, no -> ptr2);			
+			fprintf(f, "\t%cload %d\n", (consultaTipoTabSimb(no -> ptr2 -> ptr1 -> value.id) == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> ptr2 -> ptr1 -> value.id));
+		} else {
+			buildJVMPost(f, no -> ptr2);
+		}
         fprintf(f, "\t%cstore %d\n", (consultaTipoTabSimb(no -> ptr1 -> value.id) == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> ptr1 -> value.id));
     } else if(no -> op == OP_PRINT){
         fprintf(f, "\tgetstatic java/lang/System/out Ljava/io/PrintStream;\n");

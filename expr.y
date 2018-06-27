@@ -66,7 +66,7 @@ ListaCmd: ListaCmd Comando {$$.arvSint = criaNo(OP_ALEA, $2.arvSint, $1.arvSint,
 
 Comando: CmdSe {$$.arvSint = $1.arvSint;}
 	   | CmdEnquanto {$$.arvSint = $1.arvSint;}
-	   | CmdFor
+	   | CmdFor {$$.arvSint = $1.arvSint;}
 	   | CmdAtrib TPEV {$$.arvSint = $1.arvSint;}
 	   | CmdEscrita {$$.arvSint = $1.arvSint;}
 	   | CmdLeitura {$$.arvSint = $1.arvSint;}
@@ -97,6 +97,7 @@ CmdAtrib: TID TATRIB ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.ti
 	    | TID TSDIV ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_DIV, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
 	    | TID TAADD {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_ADD, criaNoV($1.tipo, $1.value), criaConstNum(TIPO_INT, 1), NULL), NULL);}
 	    | TID TSSUB {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_SUB, criaNoV($1.tipo, $1.value), criaConstNum(TIPO_INT, 1), NULL), NULL);}
+		| TID TATRIB CmdAtrib {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), $3.arvSint, NULL);}
 		;
 		 
 CmdEscrita: TPRINT TAPAR ExprAritmetica TFPAR TPEV {$$.arvSint = criaNo(OP_PRINT, $3.arvSint, NULL, NULL);}
