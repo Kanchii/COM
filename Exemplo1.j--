@@ -2,10 +2,12 @@
 	int a;
 	float b;
 
-	print("Valor de A:");
-	read(a);
-	print("Valor de B:");
-	read(b);
+	print("Valor de A: ");
+	a = 48;
+	print("48\n");
+	print("Valor de B: ");
+	b = 36;
+	print("36\n");
 	while (a != b){
 		if (a > b){
 			a = a - b;
@@ -14,7 +16,8 @@
 			b = b - a;
 		}
 	}
-	print("\nRes=");
+	print("\nRes = ");
 	print(a);
+	print("\n");
 	return 0;
 }

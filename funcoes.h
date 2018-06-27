@@ -5,10 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#define TIPO_VOID 0
 #define TIPO_INT 1
 #define TIPO_STRING 2
 #define TIPO_FLOAT 3
 #define TIPO_ID 4
+#define TIPO_IDFUNCAO 5
 
 #define OP_ADD 1
 #define OP_SUB 2
@@ -32,6 +34,8 @@
 #define OP_WHILE 20
 #define OP_FLOATTOINT 21
 #define OP_FOR 22
+#define OP_FUNC 23
+#define OP_RAIZ 24
 #define OP_ALEA 100
 
 #define MAX_HASH 113
@@ -52,18 +56,32 @@ typedef struct LDDE {
 } LDDE;
 
 struct stuff {
-	char id[11];
+	char id[50];
 	int tipo, posicao;
 };
 typedef struct stuff stuff;
 
 typedef struct STF {
-    char id[11];
+    char id[50];
     int posicao;
 } stf;
 
+typedef struct Desespero {
+    int value;
+} Desespero;
+
 struct TabSimb {
 	LDDE * lista;
+};
+
+typedef struct DadosTabFunc {
+    char * nome;
+    int tipoRetorno;
+    LDDE * listaArgs;
+} dadosTabFunc;
+
+struct TabSimbF {
+    LDDE * lista;
 };
 
 typedef union V {
@@ -77,15 +95,20 @@ struct ArvSint {
 	int op;
     int tipo;
     int graphID;
+    int posicaoFuncao;
     UnionV value;
 	struct ArvSint *ptr1, *ptr2, *ptr3, *ptr4;
 };
 
 struct TabSimb tabSimb[MAX_HASH];
+struct TabSimb tabSimbTmp[MAX_HASH];
+struct TabSimbF tabFunc[MAX_HASH];
 
 struct Atributos {
 	int tipo;
     UnionV value;
+    int posicaoFuncao;
+    LDDE *listaTipos;
 	LDDE *listaID;
 	struct ArvSint *arvSint;
 };
@@ -93,6 +116,7 @@ struct Atributos {
 /* Lista usada para criar a tabela de simbolos */
 LDDE * listaCriar(unsigned long tamInfo);
 LDDE * listaInserir(LDDE *p, void *novo, int pos);
+LDDE * listaInserir2(LDDE *p, void * novo);
 int listaBuscaInicio(LDDE *p, void *reg);
 int listaBuscaElemento(LDDE *p, void *reg, void *dest);
 int listaBuscaFim(LDDE *p, void *reg);
@@ -122,10 +146,10 @@ void gerarExprLogRel(FILE *f, struct ArvSint *no, int lv, int lf);
 
 /* Graphviz */
 void createGraphviz(struct ArvSint *no);
-void createGraphvizMarca(FILE *f, struct ArvSint *no, int *cnt);
+void createGraphvizMarca(FILE *f, struct ArvSint *no, int *cnt, int inFunction);
 void createGraphvizFinaliza(FILE *f, struct ArvSint *no);
 
-/*Tabela*/
+/*Tabela Simbolos*/
 int hash(char *id);
 void insereTabSimbolo(LDDE *p, int tipo);
 void listaInserirTabSimb(LDDE **pp, void *novo);
@@ -133,7 +157,17 @@ int consultaTipoTabSimb(char *nome);
 int consultaPosiTabSimb(char *nome);
 void printTabSimb();
 
+/*Tabela Funcao*/
+void insereTabFuncao(int tipo, char *nome, LDDE * lista);
+void insereTabSimboloTmp(LDDE *p, int tipo);
+int consultaPosiTabSimbFunc(char *nome);
+void printTabSimbTmp();
+void clearTabSimbTmp();
+
+void printTabFunc();
+
 /* Verificacao se um numero eh float */
 int ehFloat(char *num);
-
+void reverse(char s[]);
+void itoa(int n, char s[]);
 #endif

@@ -48,5 +48,5 @@ literal (\".*\")
 "!" {return TNOT;}
 {literal} {yylval.tipo = TIPO_STRING; yylval.value.stringV = (char *)malloc(sizeof(char) * strlen(yytext)); strcpy(yylval.value.stringV, yytext); return TLITERAL;}
 {num}	{if(ehFloat(yytext)){yylval.tipo = TIPO_FLOAT; yylval.value.floatV = atof(yytext);} else {yylval.tipo = TIPO_INT; yylval.value.intV = atoi(yytext);}; return TNUM;}
-{id}  {yylval.tipo = TIPO_ID; strncpy(yylval.value.id, yytext, 10); return TID;}
+{id}  {yylval.tipo = TIPO_ID; strncpy(yylval.value.id, yytext, 50); return TID;}
 . {printf("Erro léxico na linha %d\n", linha); exit(0);}

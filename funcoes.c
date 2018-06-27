@@ -14,6 +14,7 @@ LDDE * listaCriar(unsigned long tamInfo) {
         desc->inicioLista = NULL;
         desc->fimLista    = NULL;
         desc->tamInfo     = tamInfo;
+        // printf("%d\n", tamInfo);
     }
 
     return desc;
@@ -31,6 +32,41 @@ LDDE * listaInserir(LDDE *p, void *novo, int pos) {
             strncpy(tmp -> id, novo, 10);
             tmp -> posicao = pos;
             memcpy(temp->dados, tmp, p->tamInfo);
+            temp->prox = NULL;
+            if(p->inicioLista == NULL && p->fimLista == NULL) {
+                temp->ant = NULL;
+                p->fimLista    = temp;
+                p->inicioLista = temp;
+            } else if(p->inicioLista == p->fimLista) {
+                temp->ant  = p->inicioLista;
+                temp->prox = NULL;
+                p->fimLista = temp;
+                p->inicioLista->prox = p->fimLista;
+            } else {
+                temp->ant   = p->fimLista;
+                temp->prox  = NULL;
+                p->fimLista->prox = temp;
+                p->fimLista = temp;
+            }
+        }
+        else{
+            free(temp);
+        }
+    }
+    return p;
+}
+
+LDDE * listaInserir2(LDDE *p, void * novo){
+    if(p == NULL){
+        p = listaCriar(sizeof(Desespero));
+    }
+
+    NoLDDE *temp;
+
+    if((temp = (NoLDDE*) malloc(sizeof(NoLDDE))) != NULL) {
+        if((temp->dados = (void*) malloc(p -> tamInfo)) != NULL) {
+            memcpy(temp->dados, novo, sizeof(p -> tamInfo));
+
             temp->prox = NULL;
             if(p->inicioLista == NULL && p->fimLista == NULL) {
                 temp->ant = NULL;
@@ -255,6 +291,10 @@ char *printOperador(int op){
             return "WHILE";
         case OP_FOR:
 			return "FOR";
+        case OP_FUNC:
+            return "FUNC";
+        case OP_RAIZ:
+            return "RAIZ";
         default:
             return "?";
     }
@@ -295,7 +335,7 @@ void printInit(FILE *f){
 	fprintf(f, "\treturn\n");
 	fprintf(f, ".end method\n\n");
 	fprintf(f, ".method public static main([Ljava/lang/String;)V\n");
-	fprintf(f, "\t.limit stack 10\n");	
+	fprintf(f, "\t.limit stack 10\n");
 	fprintf(f, "\t.limit locals 10\n");
 }
 void printEnd(FILE *f){
@@ -311,6 +351,7 @@ void buildJVM(struct ArvSint *no){
 }
 void buildJVMPost(FILE *f, struct ArvSint *no){
     if(no == NULL) return;
+    if(no -> op == OP_FUNC) return;
     buildJVMPost(f, no -> ptr1);
     buildJVMPost(f, no -> ptr2);
     buildJVMPost(f, no -> ptr3);
@@ -351,9 +392,10 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
 }
 void buildJVMUtil(FILE *f, struct ArvSint *no){
     if(no == NULL) return;
+    if(no -> op == OP_FUNC) return;
     if(no -> op == OP_ATRIB){
 		if(no -> ptr2 -> op == OP_ATRIB){
-			buildJVMUtil(f, no -> ptr2);			
+			buildJVMUtil(f, no -> ptr2);
 			fprintf(f, "\t%cload %d\n", (consultaTipoTabSimb(no -> ptr2 -> ptr1 -> value.id) == TIPO_FLOAT ? 'f' : 'i'), consultaPosiTabSimb(no -> ptr2 -> ptr1 -> value.id));
 		} else {
 			buildJVMPost(f, no -> ptr2);
@@ -401,7 +443,7 @@ void buildJVMUtil(FILE *f, struct ArvSint *no){
 		buildJVMUtil(f, no -> ptr3);
 		gerarExprLogRel(f, no -> ptr2, lv, lf);
 		fprintf(f, "F%d:\n", lf);
-	} else {
+	} else if(no -> op != OP_FUNC){
         buildJVMUtil(f, no -> ptr3);
         buildJVMUtil(f, no -> ptr2);
         buildJVMUtil(f, no -> ptr1);
@@ -431,13 +473,11 @@ void gerarExprLogRel(FILE *f, struct ArvSint *no, int lv, int lf){
 				fprintf(f, "\tf2i\n");
 			}
 			buildJVMPost(f, no -> ptr2);
-			
+
 			if(ehTipoFloat(no -> ptr2)){
 				fprintf(f, "\tf2i\n");
 			}
-			
-			printf("ptr1Tipo: %d\tptr2Tipo: %d\n", no -> ptr1 -> tipo, no -> ptr2 -> tipo);
-			
+
 			fprintf(f, "\tif_icmpgt F%d\n", lv);
 			fprintf(f, "\tgoto F%d\n", lf);
 			break;
@@ -512,12 +552,13 @@ void createGraphviz(struct ArvSint *no){
     FILE *f = fopen("graph.dot", "w");
     int cnt = 0;
     fprintf(f, "digraph G {\n");
-    createGraphvizMarca(f, no, &cnt);
+    int inFunction = 0;
+    createGraphvizMarca(f, no, &cnt, inFunction);
     createGraphvizFinaliza(f, no);
     fprintf(f, "}\n");
     fclose(f);
 }
-void createGraphvizMarca(FILE *f, struct ArvSint *no, int *cnt){
+void createGraphvizMarca(FILE *f, struct ArvSint *no, int *cnt, int inFunction){
     if(no == NULL) return;
     (*cnt)++;
     no -> graphID = *cnt;
@@ -528,16 +569,21 @@ void createGraphvizMarca(FILE *f, struct ArvSint *no, int *cnt){
             fprintf(f, "\t%d [label = \"%.2f\"];\n", *cnt, no -> value.floatV);
         } else if(no -> tipo == TIPO_ID){
             fprintf(f, "\t%d [label = \"%s\"];\n", *cnt, no -> value.id);
-        } else {
+        } else if(no -> tipo == TIPO_STRING){
             fprintf(f, "\t%d [label = %s];\n", *cnt, no -> value.stringV);
+        } else {
+            fprintf(f, "\t%d [label = \"%d\"];\n", *cnt, no -> posicaoFuncao);
         }
     } else if(no -> op != OP_ALEA){
         fprintf(f, "\t%d [label = \"%s\"];\n", *cnt, printOperador(no -> op));
+        if(no -> op == OP_FUNC){
+            inFunction = 1;
+        }
     }
-    createGraphvizMarca(f, no -> ptr1, cnt);
-    createGraphvizMarca(f, no -> ptr2, cnt);
-    createGraphvizMarca(f, no -> ptr3, cnt);
-    createGraphvizMarca(f, no -> ptr4, cnt);
+    createGraphvizMarca(f, no -> ptr1, cnt, inFunction);
+    createGraphvizMarca(f, no -> ptr2, cnt, inFunction);
+    createGraphvizMarca(f, no -> ptr3, cnt, inFunction);
+    createGraphvizMarca(f, no -> ptr4, cnt, inFunction);
 }
 void createGraphvizFinaliza(FILE *f, struct ArvSint *no){
     if(no -> ptr1 != NULL){
@@ -646,7 +692,7 @@ void listaInserirTabSimb(LDDE **pp, void *novo){
 }
 void printTabSimb(){
     int i = 0;
-    printf("%-10s%9s%20s\n", "ID", "Tipo", "Posicao");
+    printf("%-10s%9s%18s\n", "ID", "Tipo", "Posicao");
     for(i = 0; i < MAX_HASH; i++) {
         if(tabSimb[i].lista != NULL) {
             NoLDDE * no = tabSimb[i].lista -> inicioLista;
@@ -654,6 +700,134 @@ void printTabSimb(){
                 stuff *aux = (stuff *)no->dados;
                 printf("%-15s%-15s%d\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")), aux -> posicao);
                 no = no->prox;
+            }
+        }
+    }
+}
+
+/******** Tabela funcoes *************/
+void insereTabFuncao(int tipo, char *nome, LDDE * lista){
+    NoLDDE *temp;
+
+    int h = hash(nome);
+
+    LDDE ** pp = &(tabFunc[h].lista);
+
+    if(*pp == NULL){
+        *pp = listaCriar(sizeof(dadosTabFunc));
+    }
+
+    if((temp = (NoLDDE*) malloc(sizeof(NoLDDE))) != NULL) {
+        if((temp->dados = (void*) malloc(sizeof(dadosTabFunc))) != NULL) {
+            dadosTabFunc *novoDado = malloc(sizeof(dadosTabFunc));
+            novoDado -> tipoRetorno = tipo;
+            novoDado -> nome = (char *)malloc(sizeof(char) * strlen(nome));
+            strcpy(novoDado -> nome, nome);
+            novoDado -> listaArgs = lista;
+            memcpy(temp->dados, novoDado, (sizeof(dadosTabFunc)));
+            temp->prox = NULL;
+            if((*pp)->inicioLista == NULL && (*pp)->fimLista == NULL) {
+                temp->ant = NULL;
+                (*pp)->fimLista    = temp;
+                (*pp)->inicioLista = temp;
+            } else if((*pp)->inicioLista == (*pp)->fimLista) {
+                temp->ant  = (*pp)->inicioLista;
+                temp->prox = NULL;
+                (*pp)->fimLista = temp;
+                (*pp)->inicioLista->prox = (*pp)->fimLista;
+            } else {
+                temp->ant   = (*pp)->fimLista;
+                temp->prox  = NULL;
+                (*pp)->fimLista->prox = temp;
+                (*pp)->fimLista = temp;
+            }
+        }
+        else{
+            free(temp);
+        }
+    }
+}
+
+void insereTabSimboloTmp(LDDE *p, int tipo){
+    NoLDDE * no = p -> inicioLista;
+    while(no != NULL) {
+        char tmp[50];
+        strcpy(tmp, (char *)((stf *)no->dados) -> id);
+        int h = hash(tmp);
+
+        stuff *_tmp = (stuff *)malloc(sizeof(stuff));
+        stf *tmmp = (stf *)malloc(sizeof(stf));
+        tmmp = no -> dados;
+        strcpy(_tmp->id, tmmp -> id);
+        _tmp->tipo = tipo;
+        _tmp -> posicao = tmmp -> posicao;
+
+        listaInserirTabSimb(&(tabSimbTmp[h].lista), (void *)_tmp);
+
+        no = no->prox;
+    }
+}
+
+int consultaPosiTabSimbFunc(char *nome){
+    int h = hash(nome);
+    if(tabSimbTmp[h].lista == NULL) return -1;
+    NoLDDE *no = tabSimbTmp[h].lista -> inicioLista;
+    while(no != NULL){
+        stuff *aux = (stuff *)no -> dados;
+        if(strcmp(aux -> id, nome) == 0){
+            return aux -> posicao;
+        }
+        no = no -> prox;
+    }
+    return -1;
+}
+
+void printTabSimbTmp(){
+    int i = 0;
+    printf("%-10s%9s%18s\n", "ID", "Tipo", "Posicao");
+    for(i = 0; i < MAX_HASH; i++) {
+        if(tabSimbTmp[i].lista != NULL) {
+            NoLDDE * no = tabSimbTmp[i].lista -> inicioLista;
+            while(no != NULL) {
+                stuff *aux = (stuff *)no->dados;
+                printf("%-15s%-15s%d\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")), aux -> posicao);
+                no = no->prox;
+            }
+        }
+    }
+}
+
+void clearTabSimbTmp(){
+    int i = 0;
+    for(i = 0; i < MAX_HASH; i++) {
+        if(tabSimbTmp[i].lista != NULL) {
+            destroi(&tabSimbTmp[i].lista);
+        }
+    }
+}
+
+void printTabFunc(){
+    int i = 0;
+    printf("%-10s%12s%18s\n", "ID Func", "Retorno", "Parametros");
+    for(i = 0; i < MAX_HASH; i++) {
+        if(tabFunc[i].lista != NULL) {
+            NoLDDE * no = tabFunc[i].lista -> inicioLista;
+            while(no != NULL) {
+                dadosTabFunc *aux = (dadosTabFunc *)no->dados;
+                printf("%-15s%-15s", aux -> nome, (aux -> tipoRetorno == TIPO_INT ? "INT" : (aux -> tipoRetorno == TIPO_STRING ? "STRING" : (aux -> tipoRetorno == TIPO_FLOAT ? "FLOAT" : "VOID"))));
+                NoLDDE * args = aux -> listaArgs -> inicioLista;
+                if(args != NULL){
+                    int tmp = (int)(((Desespero *)(args -> dados)) -> value);
+                    printf("%s", tmp == TIPO_INT ? "INT" : (tmp == TIPO_FLOAT ? "FLOAT" : "STRING"));
+                }
+                args = args -> prox;
+                while(args != NULL){
+                    int tmp = (int)(((Desespero *)(args -> dados)) -> value);
+                    printf(", %s", (tmp) == TIPO_INT ? "INT" : (tmp == TIPO_FLOAT ? "FLOAT" : "STRING"));
+                    args = args -> prox;
+                }
+                printf("\n");
+                no = no -> prox;
             }
         }
     }
@@ -671,4 +845,31 @@ int ehFloat(char *num){
         aux++;
     }
     return f;
+}
+
+void reverse(char s[]){
+    int i, j;
+    char c;
+
+    for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+        c = s[i];
+        s[i] = s[j];
+        s[j] = c;
+    }
+}
+
+void itoa(int n, char s[]){
+    int i, sign;
+
+    if ((sign = n) < 0)  /* record sign */
+        n = -n;          /* make n positive */
+    i = 0;
+    do {       /* generate digits in reverse order */
+        s[i++] = n % 10 + '0';   /* get next digit */
+    } while ((n /= 10) > 0);     /* delete it */
+    if (sign < 0)
+        s[i++] = '-';
+    s[i] = '\0';
+    reverse(s);
+    printf("Res: %s\n", s);
 }

@@ -1,8 +1,10 @@
 {
 	int x, y;
-	x = 1;
-	y = x++;
-	print(y);
-	print("\n");
+	x = 5;
+	for(x = 1; x <= 100; x++){
+		print("Teste: ");
+		print(x);
+		print("\n");
+	}
 	return 0;
 }

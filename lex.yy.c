@@ -1023,7 +1023,7 @@ YY_RULE_SETUP
 case 42:
 YY_RULE_SETUP
 #line 51 "expr.l"
-{yylval.tipo = TIPO_ID; strncpy(yylval.value.id, yytext, 10); return TID;}
+{yylval.tipo = TIPO_ID; strncpy(yylval.value.id, yytext, 50); return TID;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
