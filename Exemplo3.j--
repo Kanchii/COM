@@ -1,16 +1,8 @@
-int fat(int n, float k, String s){
-	String f;
-
-	f = 1;
-	while(n > 0){
-		f = f * n;
-		n = n - 1;
+int fat(float n, int s){
+	if(n <= 1 && s >= 2){
+		return 1;
 	}
-	return f;
-}
-
-void teste(int a, int b, float c){
-	return 0;
+	return s;
 }
 
 {
@@ -18,6 +10,7 @@ void teste(int a, int b, float c){
 
 	print("Valor: ");
 	n = 5;
+	n = n + 5.0;
 	x = fat(n);
 	print(x);
 }

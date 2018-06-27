@@ -21,15 +21,15 @@ Programa: ListaFuncoes BlocoPrincipal {printTabFunc(); printf("\n"); $$.arvSint 
 	    | BlocoPrincipal {$$.arvSint = $1.arvSint;}
 	    ;
 
-ListaFuncoes: ListaFuncoes Funcao {$$.arvSint = criaNo(OP_FUNC, $1.arvSint, $2.arvSint, NULL); printTabFunc(); printf("\n");}
-	        | Funcao {$$.arvSint = criaNo(OP_FUNC, $1.arvSint, NULL, NULL);}
+ListaFuncoes: ListaFuncoes Funcao {$$.arvSint = criaNo(OP_FUNC, $1.arvSint, $2.arvSint, NULL); $$.arvSint -> tipo = TIPO_IDFUNCAO; $$.arvSint -> tipoFuncao = $1.arvSint -> tipoFuncao; strcpy($$.arvSint -> nomeFuncao, $2.nomeFuncao);}
+	        | Funcao {$$.arvSint = criaNo(OP_FUNC, $1.arvSint, NULL, NULL); $$.arvSint -> tipo = TIPO_IDFUNCAO; $$.arvSint -> tipoFuncao = $1.arvSint -> tipoFuncao; strcpy($$.arvSint -> nomeFuncao, $1.nomeFuncao);}
 	        ;
 
-Funcao: DeclFuncao BlocoPrincipal {$$.arvSint = $2.arvSint; printTabSimbTmp(); clearTabSimbTmp(); posF = 0; inFunction = 0; printf("\n");}
+Funcao: DeclFuncao BlocoPrincipal {$$.arvSint = $2.arvSint; $$.arvSint -> tipo = TIPO_IDFUNCAO; $$.arvSint -> tipoFuncao = $1.tipoFuncao; strncpy($$.nomeFuncao, $1.nomeFuncao, MAX_STR_SIZE); printTabSimbTmp(); clearTabSimbTmp(); posF = 0; inFunction = 0; printf("\n");}
 	  ;
 
-DeclFuncao: TipoRetorno TID TAPAR DeclParametros TFPAR {insereTabFuncao($1.tipo, $2.value.id, $4.listaTipos);}
-		  | TipoRetorno TID TAPAR TFPAR {insereTabFuncao($1.tipo, $2.value.id, NULL);}
+DeclFuncao: TipoRetorno TID TAPAR DeclParametros TFPAR {insereTabFuncao($1.tipo, $2.value.id, $4.listaTipos); strncpy($$.nomeFuncao, $2.value.id, MAX_STR_SIZE); $$.tipo = TIPO_IDFUNCAO; $$.tipoFuncao = $1.tipo;}
+		  | TipoRetorno TID TAPAR TFPAR {insereTabFuncao($1.tipo, $2.value.id, NULL); strncpy($$.nomeFuncao, $2.value.id, MAX_STR_SIZE); $$.tipo = TIPO_IDFUNCAO; $$.tipoFuncao = $1.tipo;}
 		  ;
 
 TipoRetorno: Tipo {$$.tipo = $1.tipo; inFunction = 1;}
@@ -77,12 +77,12 @@ Comando: CmdSe {$$.arvSint = $1.arvSint;}
 	   | CmdAtrib TPEV {$$.arvSint = $1.arvSint;}
 	   | CmdEscrita {$$.arvSint = $1.arvSint;}
 	   | CmdLeitura {$$.arvSint = $1.arvSint;}
-	   | ChamadaProc
+	   | ChamadaProc {$$.arvSint = $1.arvSint;}
 	   | Retorno {$$.arvSint = $1.arvSint;}
 	   ;
 
-Retorno: TRETURN ExprAritmetica TPEV {$$.arvSint = criaNo(OP_RETURN, $2.arvSint, NULL, NULL);}
-	   | TRETURN TLITERAL TPEV {$$.arvSint = criaNo(OP_RETURN, criaNoV(TIPO_STRING, $2.value), NULL, NULL);}
+Retorno: TRETURN ExprAritmetica TPEV {$$.arvSint = criaNo(OP_RETURN, $2.arvSint, NULL, NULL); $$.arvSint -> tipo = $2.arvSint -> tipo;}
+	   | TRETURN TLITERAL TPEV {$$.arvSint = criaNo(OP_RETURN, criaNoV(TIPO_STRING, $2.value), NULL, NULL); $$.arvSint -> tipo = TIPO_STRING;}
 	   ;
 
 CmdSe: TIF TAPAR ExprLogica TFPAR Bloco {$$.arvSint = criaNo(OP_IF, $3.arvSint, $5.arvSint, NULL);}
@@ -95,9 +95,9 @@ CmdEnquanto: TWHILE TAPAR ExprLogica TFPAR Bloco {$$.arvSint = criaNo(OP_WHILE, 
 CmdFor: TFOR TAPAR CmdAtrib TPEV ExprLogica TPEV CmdAtrib TFPAR Bloco {$$.arvSint = cria4No(OP_FOR, $3.arvSint, $5.arvSint, $7.arvSint, $9.arvSint);}
 	  ;
 
-CmdAtrib: TID TATRIB ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV((inFunction ? TIPO_IDFUNCAO : $1.tipo), $1.value), $3.arvSint, NULL); if(inFunction){$$.arvSint -> ptr1 -> posicaoFuncao = consultaPosiTabSimbFunc($1.value.id);};}
-	    | TID TATRIB TLITERAL {$$.arvSint = criaNo(OP_ATRIB, criaNoV((inFunction ? TIPO_IDFUNCAO : $1.tipo), $1.value), criaNoV(TIPO_STRING, $3.value), NULL); if(inFunction){$$.arvSint -> ptr1 -> posicaoFuncao = consultaPosiTabSimbFunc($1.value.id);};}
-	    | TID TATRIB ChamadaProc
+CmdAtrib: TID TATRIB ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV((inFunction ? TIPO_IDFUNCAO : $1.tipo), $1.value), $3.arvSint, NULL); if(inFunction){$$.arvSint -> ptr1 -> posicaoFuncao = consultaPosiTabSimbFunc($1.value.id); $$.arvSint -> ptr1 -> tipoFuncao = consultaTipoTabSimbFunc($1.value.id);};}
+	    | TID TATRIB TLITERAL {$$.arvSint = criaNo(OP_ATRIB, criaNoV((inFunction ? TIPO_IDFUNCAO : $1.tipo), $1.value), criaNoV(TIPO_STRING, $3.value), NULL); if(inFunction){$$.arvSint -> ptr1 -> posicaoFuncao = consultaPosiTabSimbFunc($1.value.id); $$.arvSint -> ptr1 -> tipoFuncao = consultaTipoTabSimbFunc($1.value.id);};}
+	    | TID TATRIB ChamadaProc {$$.arvSint = criaNo(OP_ATRIB, criaNoV((inFunction ? TIPO_IDFUNCAO : $1.tipo), $1.value), $3.arvSint, NULL); if(inFunction){$$.arvSint -> ptr1 -> posicaoFuncao = consultaPosiTabSimbFunc($1.value.id); $$.arvSint -> ptr1 -> tipoFuncao = consultaTipoTabSimbFunc($1.value.id);}}
 	    | TID TSINC ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_ADD, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
 	    | TID TSDEC ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_SUB, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
 	    | TID TSMUL ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV($1.tipo, $1.value), criaNo(OP_MULT, criaNoV($1.tipo, $1.value), $3.arvSint, NULL), NULL);}
@@ -113,17 +113,17 @@ CmdEscrita: TPRINT TAPAR ExprAritmetica TFPAR TPEV {$$.arvSint = criaNo(OP_PRINT
 CmdLeitura: TREAD TAPAR TID TFPAR TPEV {$$.arvSint = criaNo(OP_READ, criaNoV(TIPO_ID, $3.value), NULL, NULL);}
       	  ;
 
-ChamadaProc: ChamadaFuncao
+ChamadaProc: ChamadaFuncao {$$.arvSint = $1.arvSint;}
        	   ;
 
-ChamadaFuncao: TID TAPAR ListaParametros TFPAR
-	         | TID TAPAR TFPAR
+ChamadaFuncao: TID TAPAR ListaParametros TFPAR {$$.arvSint = criaNo(OP_CHAMFUNC, $3.arvSint, NULL, NULL); $$.arvSint -> tipoFuncao = consultaTipoRetornoTabFunc($1.value.id); strncpy($$.arvSint -> nomeFuncao, $1.value.id, MAX_STR_SIZE);}
+	         | TID TAPAR TFPAR {strncpy($$.arvSint -> nomeFuncao, $1.value.id, MAX_STR_SIZE);}
 	         ;
 
-ListaParametros: ListaParametros TVIR ExprAritmetica
-	           | ListaParametros TVIR TLITERAL
-	           | ExprAritmetica
-	           | TLITERAL
+ListaParametros: ListaParametros TVIR ExprAritmetica {$$.arvSint = criaNo(OP_PARAMETROS, $1.arvSint, $3.arvSint, NULL);}
+	           | ListaParametros TVIR TLITERAL {$$.arvSint = criaNo(OP_PARAMETROS, $1.arvSint, criaNoV(TIPO_STRING, $3.value), NULL);}
+	           | ExprAritmetica {$$.arvSint = criaNo(OP_PARAMETROS, $1.arvSint, NULL, NULL);}
+	           | TLITERAL {$$.arvSint = criaNo(OP_PARAMETROS, criaNoV(TIPO_STRING, $1.value), NULL, NULL);}
 	           ;
 
 ExprAritmetica: ExprAritmetica TADD Termo {$$.arvSint = criaNo(OP_ADD, $1.arvSint, $3.arvSint, NULL);}
@@ -137,7 +137,7 @@ Termo: Termo TMUL Fator {$$.arvSint = criaNo(OP_MULT, $1.arvSint, $3.arvSint, NU
 	 ;
 
 Fator: TNUM {$$.arvSint = criaNoV($1.tipo, $1.value);}
-	 | TID {$$.arvSint = criaNoV((inFunction ? TIPO_IDFUNCAO : $1.tipo), $1.value); if(inFunction){$$.arvSint -> posicaoFuncao = consultaPosiTabSimbFunc($1.value.id);};}
+	 | TID {$$.arvSint = criaNoV((inFunction ? TIPO_IDFUNCAO : $1.tipo), $1.value); if(inFunction){$$.arvSint -> posicaoFuncao = consultaPosiTabSimbFunc($1.value.id); $$.arvSint -> tipoFuncao = consultaTipoTabSimbFunc($1.value.id);};}
 	 | TAPAR ExprAritmetica TFPAR {$$.arvSint = $2.arvSint;}
 	 | TSUB Fator {$$.arvSint = criaNo(OP_SUB, $2.arvSint, NULL, NULL);}
 	 ;

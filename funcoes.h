@@ -36,10 +36,12 @@
 #define OP_FOR 22
 #define OP_FUNC 23
 #define OP_RAIZ 24
+#define OP_PARAMETROS 25
+#define OP_CHAMFUNC 26
 #define OP_ALEA 100
 
 #define MAX_HASH 113
-#define MAX_STR_SIZE 11
+#define MAX_STR_SIZE 50
 
 extern int label;
 
@@ -56,13 +58,13 @@ typedef struct LDDE {
 } LDDE;
 
 struct stuff {
-	char id[50];
+	char id[MAX_STR_SIZE];
 	int tipo, posicao;
 };
 typedef struct stuff stuff;
 
 typedef struct STF {
-    char id[50];
+    char id[MAX_STR_SIZE];
     int posicao;
 } stf;
 
@@ -96,6 +98,8 @@ struct ArvSint {
     int tipo;
     int graphID;
     int posicaoFuncao;
+    int tipoFuncao;
+    char nomeFuncao[MAX_STR_SIZE];
     UnionV value;
 	struct ArvSint *ptr1, *ptr2, *ptr3, *ptr4;
 };
@@ -108,6 +112,8 @@ struct Atributos {
 	int tipo;
     UnionV value;
     int posicaoFuncao;
+    int tipoFuncao;
+    char nomeFuncao[MAX_STR_SIZE];
     LDDE *listaTipos;
 	LDDE *listaID;
 	struct ArvSint *arvSint;
@@ -131,6 +137,7 @@ struct ArvSint * cria4No(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, str
 struct ArvSint * criaNoV(int tipo, UnionV v);
 struct ArvSint *createNodoConversor(int op, struct ArvSint *ptr);
 struct ArvSint *criaConstNum(int tipo, float value);
+void printParametros(FILE *f, struct ArvSint *no);
 
 /* Percorrer arvore pos ordem */
 char *printOperador(int op);
@@ -138,8 +145,10 @@ void printPosOrdem(struct ArvSint *no);
 
 /* JVM */
 void printInit(FILE *f);
+void printInitMain(FILE *f);
 void printEnd(FILE *f);
 void buildJVM(struct ArvSint *no);
+void buildJVMFunctions(FILE *f, struct ArvSint *no);
 void buildJVMUtil(FILE *f, struct ArvSint *no);
 void buildJVMPost(FILE *f, struct ArvSint *no);
 void gerarExprLogRel(FILE *f, struct ArvSint *no, int lv, int lf);
@@ -161,8 +170,13 @@ void printTabSimb();
 void insereTabFuncao(int tipo, char *nome, LDDE * lista);
 void insereTabSimboloTmp(LDDE *p, int tipo);
 int consultaPosiTabSimbFunc(char *nome);
+int consultaTipoTabSimbFunc(char *nome);
+LDDE * consultaTipoArgsTabFunc(char *nome);
+int consultaTipoRetornoTabFunc(char *nome);
 void printTabSimbTmp();
 void clearTabSimbTmp();
+void printTipoArgsFunc(FILE *f, char *nome);
+void printTipoRetornoFunc(FILE *f, char *nome);
 
 void printTabFunc();
 

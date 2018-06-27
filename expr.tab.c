@@ -1389,31 +1389,31 @@ yyreduce:
 
   case 5:
 #line 24 "expr.y" /* yacc.c:1646  */
-    {(yyval).arvSint = criaNo(OP_FUNC, (yyvsp[-1]).arvSint, (yyvsp[0]).arvSint, NULL); printTabFunc(); printf("\n");}
+    {(yyval).arvSint = criaNo(OP_FUNC, (yyvsp[-1]).arvSint, (yyvsp[0]).arvSint, NULL); (yyval).arvSint -> tipo = TIPO_IDFUNCAO; (yyval).arvSint -> tipoFuncao = (yyvsp[-1]).arvSint -> tipoFuncao; strcpy((yyval).arvSint -> nomeFuncao, (yyvsp[0]).nomeFuncao);}
 #line 1394 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
 #line 25 "expr.y" /* yacc.c:1646  */
-    {(yyval).arvSint = criaNo(OP_FUNC, (yyvsp[0]).arvSint, NULL, NULL);}
+    {(yyval).arvSint = criaNo(OP_FUNC, (yyvsp[0]).arvSint, NULL, NULL); (yyval).arvSint -> tipo = TIPO_IDFUNCAO; (yyval).arvSint -> tipoFuncao = (yyvsp[0]).arvSint -> tipoFuncao; strcpy((yyval).arvSint -> nomeFuncao, (yyvsp[0]).nomeFuncao);}
 #line 1400 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
 #line 28 "expr.y" /* yacc.c:1646  */
-    {(yyval).arvSint = (yyvsp[0]).arvSint; printTabSimbTmp(); clearTabSimbTmp(); posF = 0; inFunction = 0; printf("\n");}
+    {(yyval).arvSint = (yyvsp[0]).arvSint; (yyval).arvSint -> tipo = TIPO_IDFUNCAO; (yyval).arvSint -> tipoFuncao = (yyvsp[-1]).tipoFuncao; strncpy((yyval).nomeFuncao, (yyvsp[-1]).nomeFuncao, MAX_STR_SIZE); printTabSimbTmp(); clearTabSimbTmp(); posF = 0; inFunction = 0; printf("\n");}
 #line 1406 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
 #line 31 "expr.y" /* yacc.c:1646  */
-    {insereTabFuncao((yyvsp[-4]).tipo, (yyvsp[-3]).value.id, (yyvsp[-1]).listaTipos);}
+    {insereTabFuncao((yyvsp[-4]).tipo, (yyvsp[-3]).value.id, (yyvsp[-1]).listaTipos); strncpy((yyval).nomeFuncao, (yyvsp[-3]).value.id, MAX_STR_SIZE); (yyval).tipo = TIPO_IDFUNCAO; (yyval).tipoFuncao = (yyvsp[-4]).tipo;}
 #line 1412 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
 #line 32 "expr.y" /* yacc.c:1646  */
-    {insereTabFuncao((yyvsp[-3]).tipo, (yyvsp[-2]).value.id, NULL);}
+    {insereTabFuncao((yyvsp[-3]).tipo, (yyvsp[-2]).value.id, NULL); strncpy((yyval).nomeFuncao, (yyvsp[-2]).value.id, MAX_STR_SIZE); (yyval).tipo = TIPO_IDFUNCAO; (yyval).tipoFuncao = (yyvsp[-3]).tipo;}
 #line 1418 "expr.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1550,254 +1550,308 @@ yyreduce:
 #line 1551 "expr.tab.c" /* yacc.c:1646  */
     break;
 
-  case 35:
-#line 81 "expr.y" /* yacc.c:1646  */
+  case 34:
+#line 80 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[0]).arvSint;}
 #line 1557 "expr.tab.c" /* yacc.c:1646  */
     break;
 
+  case 35:
+#line 81 "expr.y" /* yacc.c:1646  */
+    {(yyval).arvSint = (yyvsp[0]).arvSint;}
+#line 1563 "expr.tab.c" /* yacc.c:1646  */
+    break;
+
   case 36:
 #line 84 "expr.y" /* yacc.c:1646  */
-    {(yyval).arvSint = criaNo(OP_RETURN, (yyvsp[-1]).arvSint, NULL, NULL);}
-#line 1563 "expr.tab.c" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNo(OP_RETURN, (yyvsp[-1]).arvSint, NULL, NULL); (yyval).arvSint -> tipo = (yyvsp[-1]).arvSint -> tipo;}
+#line 1569 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
 #line 85 "expr.y" /* yacc.c:1646  */
-    {(yyval).arvSint = criaNo(OP_RETURN, criaNoV(TIPO_STRING, (yyvsp[-1]).value), NULL, NULL);}
-#line 1569 "expr.tab.c" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNo(OP_RETURN, criaNoV(TIPO_STRING, (yyvsp[-1]).value), NULL, NULL); (yyval).arvSint -> tipo = TIPO_STRING;}
+#line 1575 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
 #line 88 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_IF, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1575 "expr.tab.c" /* yacc.c:1646  */
+#line 1581 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
 #line 89 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_IF, (yyvsp[-4]).arvSint, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint);}
-#line 1581 "expr.tab.c" /* yacc.c:1646  */
+#line 1587 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
 #line 92 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_WHILE, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1587 "expr.tab.c" /* yacc.c:1646  */
+#line 1593 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
 #line 95 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = cria4No(OP_FOR, (yyvsp[-6]).arvSint, (yyvsp[-4]).arvSint, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint);}
-#line 1593 "expr.tab.c" /* yacc.c:1646  */
+#line 1599 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
 #line 98 "expr.y" /* yacc.c:1646  */
-    {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((inFunction ? TIPO_IDFUNCAO : (yyvsp[-2]).tipo), (yyvsp[-2]).value), (yyvsp[0]).arvSint, NULL); if(inFunction){(yyval).arvSint -> ptr1 -> posicaoFuncao = consultaPosiTabSimbFunc((yyvsp[-2]).value.id);};}
-#line 1599 "expr.tab.c" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((inFunction ? TIPO_IDFUNCAO : (yyvsp[-2]).tipo), (yyvsp[-2]).value), (yyvsp[0]).arvSint, NULL); if(inFunction){(yyval).arvSint -> ptr1 -> posicaoFuncao = consultaPosiTabSimbFunc((yyvsp[-2]).value.id); (yyval).arvSint -> ptr1 -> tipoFuncao = consultaTipoTabSimbFunc((yyvsp[-2]).value.id);};}
+#line 1605 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
 #line 99 "expr.y" /* yacc.c:1646  */
-    {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((inFunction ? TIPO_IDFUNCAO : (yyvsp[-2]).tipo), (yyvsp[-2]).value), criaNoV(TIPO_STRING, (yyvsp[0]).value), NULL); if(inFunction){(yyval).arvSint -> ptr1 -> posicaoFuncao = consultaPosiTabSimbFunc((yyvsp[-2]).value.id);};}
-#line 1605 "expr.tab.c" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((inFunction ? TIPO_IDFUNCAO : (yyvsp[-2]).tipo), (yyvsp[-2]).value), criaNoV(TIPO_STRING, (yyvsp[0]).value), NULL); if(inFunction){(yyval).arvSint -> ptr1 -> posicaoFuncao = consultaPosiTabSimbFunc((yyvsp[-2]).value.id); (yyval).arvSint -> ptr1 -> tipoFuncao = consultaTipoTabSimbFunc((yyvsp[-2]).value.id);};}
+#line 1611 "expr.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 44:
+#line 100 "expr.y" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((inFunction ? TIPO_IDFUNCAO : (yyvsp[-2]).tipo), (yyvsp[-2]).value), (yyvsp[0]).arvSint, NULL); if(inFunction){(yyval).arvSint -> ptr1 -> posicaoFuncao = consultaPosiTabSimbFunc((yyvsp[-2]).value.id); (yyval).arvSint -> ptr1 -> tipoFuncao = consultaTipoTabSimbFunc((yyvsp[-2]).value.id);}}
+#line 1617 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
 #line 101 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((yyvsp[-2]).tipo, (yyvsp[-2]).value), criaNo(OP_ADD, criaNoV((yyvsp[-2]).tipo, (yyvsp[-2]).value), (yyvsp[0]).arvSint, NULL), NULL);}
-#line 1611 "expr.tab.c" /* yacc.c:1646  */
+#line 1623 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
 #line 102 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((yyvsp[-2]).tipo, (yyvsp[-2]).value), criaNo(OP_SUB, criaNoV((yyvsp[-2]).tipo, (yyvsp[-2]).value), (yyvsp[0]).arvSint, NULL), NULL);}
-#line 1617 "expr.tab.c" /* yacc.c:1646  */
+#line 1629 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
 #line 103 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((yyvsp[-2]).tipo, (yyvsp[-2]).value), criaNo(OP_MULT, criaNoV((yyvsp[-2]).tipo, (yyvsp[-2]).value), (yyvsp[0]).arvSint, NULL), NULL);}
-#line 1623 "expr.tab.c" /* yacc.c:1646  */
+#line 1635 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
 #line 104 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((yyvsp[-2]).tipo, (yyvsp[-2]).value), criaNo(OP_DIV, criaNoV((yyvsp[-2]).tipo, (yyvsp[-2]).value), (yyvsp[0]).arvSint, NULL), NULL);}
-#line 1629 "expr.tab.c" /* yacc.c:1646  */
+#line 1641 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
 #line 105 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((yyvsp[-1]).tipo, (yyvsp[-1]).value), criaNo(OP_ADD, criaNoV((yyvsp[-1]).tipo, (yyvsp[-1]).value), criaConstNum(TIPO_INT, 1), NULL), NULL);}
-#line 1635 "expr.tab.c" /* yacc.c:1646  */
+#line 1647 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
 #line 106 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_ATRIB, criaNoV((yyvsp[-1]).tipo, (yyvsp[-1]).value), criaNo(OP_SUB, criaNoV((yyvsp[-1]).tipo, (yyvsp[-1]).value), criaConstNum(TIPO_INT, 1), NULL), NULL);}
-#line 1641 "expr.tab.c" /* yacc.c:1646  */
+#line 1653 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
 #line 109 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_PRINT, (yyvsp[-2]).arvSint, NULL, NULL);}
-#line 1647 "expr.tab.c" /* yacc.c:1646  */
+#line 1659 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
 #line 110 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_PRINT, criaNoV(TIPO_STRING, (yyvsp[-2]).value), NULL, NULL);}
-#line 1653 "expr.tab.c" /* yacc.c:1646  */
+#line 1665 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
 #line 113 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_READ, criaNoV(TIPO_ID, (yyvsp[-2]).value), NULL, NULL);}
-#line 1659 "expr.tab.c" /* yacc.c:1646  */
+#line 1671 "expr.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 54:
+#line 116 "expr.y" /* yacc.c:1646  */
+    {(yyval).arvSint = (yyvsp[0]).arvSint;}
+#line 1677 "expr.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 55:
+#line 119 "expr.y" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNo(OP_CHAMFUNC, (yyvsp[-1]).arvSint, NULL, NULL); (yyval).arvSint -> tipoFuncao = consultaTipoRetornoTabFunc((yyvsp[-3]).value.id); strncpy((yyval).arvSint -> nomeFuncao, (yyvsp[-3]).value.id, MAX_STR_SIZE);}
+#line 1683 "expr.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 56:
+#line 120 "expr.y" /* yacc.c:1646  */
+    {strncpy((yyval).arvSint -> nomeFuncao, (yyvsp[-2]).value.id, MAX_STR_SIZE);}
+#line 1689 "expr.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 57:
+#line 123 "expr.y" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNo(OP_PARAMETROS, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
+#line 1695 "expr.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 124 "expr.y" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNo(OP_PARAMETROS, (yyvsp[-2]).arvSint, criaNoV(TIPO_STRING, (yyvsp[0]).value), NULL);}
+#line 1701 "expr.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 125 "expr.y" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNo(OP_PARAMETROS, (yyvsp[0]).arvSint, NULL, NULL);}
+#line 1707 "expr.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 60:
+#line 126 "expr.y" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNo(OP_PARAMETROS, criaNoV(TIPO_STRING, (yyvsp[0]).value), NULL, NULL);}
+#line 1713 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
 #line 129 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_ADD, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1665 "expr.tab.c" /* yacc.c:1646  */
+#line 1719 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
 #line 130 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_SUB, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1671 "expr.tab.c" /* yacc.c:1646  */
+#line 1725 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
 #line 131 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[0]).arvSint;}
-#line 1677 "expr.tab.c" /* yacc.c:1646  */
+#line 1731 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
 #line 134 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_MULT, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1683 "expr.tab.c" /* yacc.c:1646  */
+#line 1737 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
 #line 135 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_DIV, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1689 "expr.tab.c" /* yacc.c:1646  */
+#line 1743 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
 #line 136 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[0]).arvSint;}
-#line 1695 "expr.tab.c" /* yacc.c:1646  */
+#line 1749 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
 #line 139 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNoV((yyvsp[0]).tipo, (yyvsp[0]).value);}
-#line 1701 "expr.tab.c" /* yacc.c:1646  */
+#line 1755 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
 #line 140 "expr.y" /* yacc.c:1646  */
-    {(yyval).arvSint = criaNoV((inFunction ? TIPO_IDFUNCAO : (yyvsp[0]).tipo), (yyvsp[0]).value); if(inFunction){(yyval).arvSint -> posicaoFuncao = consultaPosiTabSimbFunc((yyvsp[0]).value.id);};}
-#line 1707 "expr.tab.c" /* yacc.c:1646  */
+    {(yyval).arvSint = criaNoV((inFunction ? TIPO_IDFUNCAO : (yyvsp[0]).tipo), (yyvsp[0]).value); if(inFunction){(yyval).arvSint -> posicaoFuncao = consultaPosiTabSimbFunc((yyvsp[0]).value.id); (yyval).arvSint -> tipoFuncao = consultaTipoTabSimbFunc((yyvsp[0]).value.id);};}
+#line 1761 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
 #line 141 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[-1]).arvSint;}
-#line 1713 "expr.tab.c" /* yacc.c:1646  */
+#line 1767 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 70:
 #line 142 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_SUB, (yyvsp[0]).arvSint, NULL, NULL);}
-#line 1719 "expr.tab.c" /* yacc.c:1646  */
+#line 1773 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
 #line 145 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_MENOR, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1725 "expr.tab.c" /* yacc.c:1646  */
+#line 1779 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
 #line 146 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_MAIOR, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1731 "expr.tab.c" /* yacc.c:1646  */
+#line 1785 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
 #line 147 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_MENORIG, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1737 "expr.tab.c" /* yacc.c:1646  */
+#line 1791 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
 #line 148 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_MAIORIG, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1743 "expr.tab.c" /* yacc.c:1646  */
+#line 1797 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
 #line 149 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_CMP, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1749 "expr.tab.c" /* yacc.c:1646  */
+#line 1803 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 76:
 #line 150 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_DIF, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1755 "expr.tab.c" /* yacc.c:1646  */
+#line 1809 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 77:
 #line 153 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_AND, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1761 "expr.tab.c" /* yacc.c:1646  */
+#line 1815 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 78:
 #line 154 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_OR, (yyvsp[-2]).arvSint, (yyvsp[0]).arvSint, NULL);}
-#line 1767 "expr.tab.c" /* yacc.c:1646  */
+#line 1821 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 79:
 #line 155 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[0]).arvSint;}
-#line 1773 "expr.tab.c" /* yacc.c:1646  */
+#line 1827 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 80:
 #line 158 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[-1]).arvSint;}
-#line 1779 "expr.tab.c" /* yacc.c:1646  */
+#line 1833 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 81:
 #line 159 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_NOT, (yyvsp[0]).arvSint, NULL, NULL);}
-#line 1785 "expr.tab.c" /* yacc.c:1646  */
+#line 1839 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 82:
 #line 160 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = criaNo(OP_NOT, (yyvsp[0]).arvSint, NULL, NULL);}
-#line 1791 "expr.tab.c" /* yacc.c:1646  */
+#line 1845 "expr.tab.c" /* yacc.c:1646  */
     break;
 
   case 83:
 #line 161 "expr.y" /* yacc.c:1646  */
     {(yyval).arvSint = (yyvsp[0]).arvSint;}
-#line 1797 "expr.tab.c" /* yacc.c:1646  */
+#line 1851 "expr.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1801 "expr.tab.c" /* yacc.c:1646  */
+#line 1855 "expr.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

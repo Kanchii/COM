@@ -1,15 +1,33 @@
-{
-	int a, b;
-	a = 15;
-	b = 200;
-	
-	if(a > b && a != 0){
-		print("A eh maior e valor: ");
-		print(a);
+int isPrimo(int n, int aux){
+	int ret, a;
+	print("Testando ");
+	print(n);
+	print(" dividido por ");
+	print(aux);
+	print("\n");
+	if(aux <= 1){
+		ret = 1;
 	} else {
-		print("B eh maior e valor: ");
-		print(b);
+		a = n;
+		while(a > 0){
+			a = a - aux;
+		}
+		if(a == 0){
+			ret = 0;
+		} else {
+			ret = isPrimo(n, aux - 1);
+		}
 	}
-
-	return 0;
+	return ret;
+}
+{
+	int n, ret;
+	n = 995;
+	ret = isPrimo(n, n / 2);
+	print(n);
+	if(ret == 0){
+		print(" nao eh primo!\n");
+	} else {
+		print(" eh primo!\n");
+	}
 }
