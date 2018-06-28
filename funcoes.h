@@ -40,6 +40,7 @@
 #define OP_PARAMETROS 25
 #define OP_CHAMFUNC 26
 #define OP_DOWHILE 27
+#define OP_SQRT 28
 #define OP_ALEA 100
 
 #define MAX_HASH 113

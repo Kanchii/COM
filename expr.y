@@ -14,7 +14,7 @@ int scanner = 0;
 
 %token TADD TMUL TSUB TDIV TAPAR TFPAR TNUM TMENOR TMAIOR TMENORIG TMAIORIG TIGUAL TDIF
 %token TAND TOR TNOT TID TACH TFCH TVOID TINT TSTRING TFLOAT TRETURN TPEV TATRIB TIF TWHILE
-%token TELSE TPRINT TREAD TLITERAL TVIR TSINC TSDEC TSMUL TSDIV TAADD TSSUB TFOR TDO
+%token TELSE TPRINT TREAD TLITERAL TVIR TSINC TSDEC TSMUL TSDIV TAADD TSSUB TFOR TDO TSQRT
 %%
 
 Linha: Programa {if(scanner){$$.listaID = listaCriar(sizeof(stf)); $$.listaID = listaInserir($$.listaID, (void *)"__read__", pos++); insereTabSimbolo($$.listaID, TIPO_SCANNER);} printTabSimb(); buildJVM($1.arvSint, numVariaveisMain, scanner); createGraphviz($1.arvSint); printf("\n\n\tSUCESSO\n"); exit(0);}
@@ -115,6 +115,7 @@ CmdAtrib: TID TATRIB ExprAritmetica {$$.arvSint = criaNo(OP_ATRIB, criaNoV((inFu
 
 CmdEscrita: TPRINT TAPAR ExprAritmetica TFPAR TPEV {$$.arvSint = criaNo(OP_PRINT, $3.arvSint, NULL, NULL);}
 	      | TPRINT TAPAR TLITERAL TFPAR TPEV {$$.arvSint = criaNo(OP_PRINT, criaNoV(TIPO_STRING, $3.value), NULL, NULL);}
+		  | TPRINT TAPAR ChamadaFuncao TFPAR TPEV {$$.arvSint = criaNo(OP_PRINT, $3.arvSint, NULL, NULL);}
 	      ;
 
 CmdLeitura: TREAD TAPAR TID TFPAR TPEV {$$.arvSint = criaNo(OP_READ, criaNoV((inFunction ? TIPO_IDFUNCAO : TIPO_ID), $3.value), NULL, NULL); scanner = 1;}
@@ -125,7 +126,8 @@ ChamadaProc: ChamadaFuncao {$$.arvSint = $1.arvSint;}
 
 ChamadaFuncao: TID TAPAR ListaParametros TFPAR {$$.arvSint = criaNo(OP_CHAMFUNC, $3.arvSint, NULL, NULL); $$.arvSint -> tipoFuncao = consultaTipoRetornoTabFunc($1.value.id); $$.arvSint -> tipo = consultaTipoRetornoTabFunc($1.value.id); strncpy($$.arvSint -> nomeFuncao, $1.value.id, MAX_STR_SIZE);}
 	         | TID TAPAR TFPAR {$$.arvSint = criaNo(OP_CHAMFUNC, NULL, NULL, NULL); strncpy($$.arvSint -> nomeFuncao, $1.value.id, MAX_STR_SIZE); $$.arvSint -> tipoFuncao = consultaTipoRetornoTabFunc($1.value.id); $$.arvSint -> tipo = consultaTipoRetornoTabFunc($1.value.id);}
-	         ;
+			 | TSQRT TAPAR ExprAritmetica TFPAR {$$.arvSint = criaNo(OP_SQRT, $3.arvSint, NULL, NULL); $$.arvSint -> tipo = TIPO_FLOAT;}
+			 ;
 
 ListaParametros: ListaParametros TVIR ExprAritmetica {$$.arvSint = criaNo(OP_PARAMETROS, $1.arvSint, $3.arvSint, NULL);}
 	           | ListaParametros TVIR TLITERAL {$$.arvSint = criaNo(OP_PARAMETROS, $1.arvSint, criaNoV(TIPO_STRING, $3.value), NULL);}

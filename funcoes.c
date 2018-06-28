@@ -302,6 +302,8 @@ char *printOperador(int op){
             return "CHAMFUNC";
         case OP_DOWHILE:
             return "DO_WHILE";
+        case OP_SQRT:
+            return "SQRT";
         default:
             return "?";
     }
@@ -445,6 +447,20 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
         fprintf(f, ")%s\n", (t == TIPO_INT ? "I" : (t == TIPO_VOID ? "V" : (t == TIPO_FLOAT ? "F" : "Ljava/lang/String;"))));
     } else if(no -> op == OP_PARAMETROS){
         return;
+    } else if(no -> op == OP_SQRT){
+        int t = no -> ptr1 -> tipo;
+        if(t == TIPO_ID){
+            t = consultaTipoTabSimb(no -> ptr1 -> value.id);
+        } else if(t == TIPO_IDFUNCAO){
+            t = no -> ptr1 -> tipoFuncao;
+        }
+        if(t == TIPO_INT){
+            fprintf(f, "\ti2d\n");
+        } else if(t == TIPO_FLOAT){
+            fprintf(f, "\tf2d\n");
+        }
+        fprintf(f, "\tinvokestatic java/lang/Math/sqrt(D)D\n");
+        fprintf(f, "\td2f\n");
     } else if(no -> tipo == TIPO_ID){
         int t = consultaTipoTabSimb(no -> value.id);
         fprintf(f, "\t%cload %d\n", t == TIPO_FLOAT ? 'f' : (t == TIPO_INT ? 'i' : 'a'), consultaPosiTabSimb(no -> value.id));

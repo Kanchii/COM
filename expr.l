@@ -32,6 +32,7 @@ literal (\".*\")
 "int" {return TINT;}
 "String" {return TSTRING;}
 "float" {return TFLOAT;}
+"sqrt" {return TSQRT;}
 "return" {return TRETURN;}
 ">=" {return TMAIORIG;}
 "<=" {return TMENORIG;}
