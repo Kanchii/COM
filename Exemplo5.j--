@@ -5,7 +5,8 @@ int teste(int a, float b, int c){
 }
 
 {
-	int num, i, aux, f;
+	int num, i, aux, f, beta;
+	beta = teste(1, 5.0, 4+4);
 	num = 53;
 	i = 2;
 	f = 1;
@@ -27,6 +28,4 @@ int teste(int a, float b, int c){
 	} else {
 		print(" nao eh primo!!\n");
 	}
-
-	return 0;
 }

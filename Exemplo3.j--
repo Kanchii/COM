@@ -1,16 +1,21 @@
-int fat(float n, int s){
-	if(n <= 1 && s >= 2){
-		return 1;
+int fat(int n){
+	int ret, tmp;
+	if(n <= 1){
+		ret = 1;
+	} else {
+		tmp = fat(n - 1);
+		ret = n * tmp;
 	}
-	return s;
+	return ret;
 }
 
 {
-	int n, x;
-
-	print("Valor: ");
-	n = 5;
-	n = n + 5.0;
-	x = fat(n);
-	print(x);
+	int n, ret;
+	read(n);
+	ret = fat(n);
+	print("Fatorial(");
+	print(n);
+	print(") = ");
+	print(ret);
+	print("\n");
 }

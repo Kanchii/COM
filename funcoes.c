@@ -162,15 +162,15 @@ struct ArvSint *createNodoConversor(int op, struct ArvSint *ptr){
     return novoNodo;
 }
 int binaryOp(int op){
-    return (op == OP_SUB || op == OP_DIV || op == OP_MULT || op == OP_ADD || op == OP_ATRIB);
+    return (op == OP_SUB || op == OP_DIV || op == OP_MULT || op == OP_ADD);
 }
 struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, struct ArvSint *ptr3){
     struct ArvSint *tmp = (struct ArvSint *)malloc(sizeof(struct ArvSint));
     tmp -> op = op;
 
     if(op == OP_ATRIB){
-        int t1 = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : (ptr1 -> tipo == TIPO_IDFUNCAO ? ptr1 -> tipoFuncao : ptr1 -> tipo));
-        int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : (ptr2 -> tipo == TIPO_IDFUNCAO ? ptr2 -> tipoFuncao : ptr2 -> tipo));
+        int t1 = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : (ptr1 -> tipo == TIPO_IDFUNCAO ? consultaTipoTabSimbFunc(ptr1 -> value.id) : ptr1 -> tipo));
+        int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : (ptr2 -> tipo == TIPO_IDFUNCAO ? consultaTipoTabSimbFunc(ptr2 -> value.id) : ptr2 -> tipo));
 
         if(t1 == TIPO_FLOAT && t2 == TIPO_INT){
             ptr2 = createNodoConversor(OP_INTTOFLOAT, ptr2);
@@ -178,8 +178,8 @@ struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, stru
             ptr2 = createNodoConversor(OP_FLOATTOINT, ptr2);
         }
     } else if(ptr1 != NULL && ptr2 != NULL && binaryOp(op)){
-        int t1 = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : (ptr1 -> tipo == TIPO_IDFUNCAO ? ptr1 -> tipoFuncao : ptr1 -> tipo));
-        int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : (ptr2 -> tipo == TIPO_IDFUNCAO ? ptr2 -> tipoFuncao : ptr2 -> tipo));
+        int t1 = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : (ptr1 -> tipo == TIPO_IDFUNCAO ? consultaTipoTabSimbFunc(ptr1 -> value.id) : ptr1 -> tipo));
+        int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : (ptr2 -> tipo == TIPO_IDFUNCAO ? consultaTipoTabSimbFunc(ptr2 -> value.id) : ptr2 -> tipo));
 
         if((t1 == TIPO_INT && t2 == TIPO_FLOAT) || (t1 == TIPO_FLOAT && t2 == TIPO_INT)){
             if(t1 == TIPO_INT){
@@ -191,15 +191,15 @@ struct ArvSint * criaNo(int op, struct ArvSint *ptr1, struct ArvSint *ptr2, stru
     }
     if(ptr1 != NULL){
 		if(ptr2 != NULL){
-            int t1 = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : (ptr1 -> tipo == TIPO_IDFUNCAO ? ptr1 -> tipoFuncao : ptr1 -> tipo));
-            int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : (ptr2 -> tipo == TIPO_IDFUNCAO ? ptr2 -> tipoFuncao : ptr2 -> tipo));
+            int t1 = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : (ptr1 -> tipo == TIPO_IDFUNCAO ? consultaTipoTabSimbFunc(ptr1 -> value.id) : ptr1 -> tipo));
+            int t2 = (ptr2 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr2 -> value.id) : (ptr2 -> tipo == TIPO_IDFUNCAO ? consultaTipoTabSimbFunc(ptr2 -> value.id) : ptr2 -> tipo));
 			if(t1 != t2){
 				tmp -> tipo = TIPO_FLOAT;
 			} else {
 				tmp -> tipo = t1;
 			}
 		} else {
-			tmp -> tipo = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : (ptr1 -> tipo == TIPO_IDFUNCAO ? ptr1 -> tipoFuncao : ptr1 -> tipo));
+			tmp -> tipo = (ptr1 -> tipo == TIPO_ID ? consultaTipoTabSimb(ptr1 -> value.id) : (ptr1 -> tipo == TIPO_IDFUNCAO ? consultaTipoTabSimbFunc(ptr1 -> value.id) : ptr1 -> tipo));
 		}
     } else {
         tmp -> tipo = OP_ALEA;
@@ -300,6 +300,8 @@ char *printOperador(int op){
             return "PARAMETROS";
         case OP_CHAMFUNC:
             return "CHAMFUNC";
+        case OP_DOWHILE:
+            return "DO_WHILE";
         default:
             return "?";
     }
@@ -366,20 +368,28 @@ void printInit(FILE *f){
 	fprintf(f, "\treturn\n");
 	fprintf(f, ".end method\n\n");
 }
-void printInitMain(FILE *f){
+void printInitMain(FILE *f, int numVariaveisMain, int scanner){
     fprintf(f, ".method public static main([Ljava/lang/String;)V\n");
     fprintf(f, "\t.limit stack 10\n");
-    fprintf(f, "\t.limit locals 10\n");
+    if(scanner) numVariaveisMain++;
+    fprintf(f, "\t.limit locals %d\n", numVariaveisMain);
+    if(scanner){
+        fprintf(f, "\tnew java/util/Scanner\n");
+        fprintf(f, "\tdup\n");
+        fprintf(f, "\tgetstatic java/lang/System/in Ljava/io/InputStream;\n");
+        fprintf(f, "\tinvokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V\n");
+        fprintf(f, "\tastore %d\n", consultaPosiTabSimb("__read__"));
+    }
 }
 void printEnd(FILE *f){
 	fprintf(f, "\treturn\n");
 	fprintf(f, ".end method\n");
 }
-void buildJVM(struct ArvSint *no){
+void buildJVM(struct ArvSint *no, int numVariaveisMain, int scanner){
     FILE *f = fopen("JVM.j", "w");
     printInit(f);
     buildJVMFunctions(f, no -> ptr1);
-    printInitMain(f);
+    printInitMain(f, numVariaveisMain, scanner);
     buildJVMUtil(f, no -> ptr2);
     printEnd(f);
     fclose(f);
@@ -394,7 +404,7 @@ void buildJVMFunctions(FILE *f, struct ArvSint *no){
     fprintf(f, ")");
     printTipoRetornoFunc(f, no -> nomeFuncao);
     fprintf(f, "\t.limit stack 10\n");
-    fprintf(f, "\t.limit locals 10\n");
+    fprintf(f, "\t.limit locals %d\n", consultaNumVarTabSimbFunc(no -> nomeFuncao));
     if(no -> ptr1 -> op != OP_FUNC){
         buildJVMUtil(f, no -> ptr1);
         fprintf(f, ".end method\n\n");
@@ -410,7 +420,6 @@ void buildJVMPost(FILE *f, struct ArvSint *no){
     buildJVMPost(f, no -> ptr2);
     buildJVMPost(f, no -> ptr3);
     buildJVMPost(f, no -> ptr4);
-
     if(no -> op == OP_ADD){
         int t = no -> tipo;
         fprintf(f, "\t%cadd\n", (t == TIPO_FLOAT ? 'f' : (t == TIPO_INT ? 'i' : 'a')));
@@ -509,7 +518,14 @@ void buildJVMUtil(FILE *f, struct ArvSint *no){
 		buildJVMUtil(f, no -> ptr2);
 		gerarExprLogRel(f, no -> ptr1, lv, lf);
 		fprintf(f, "F%d:\n", lf);
-	} else if(no -> op == OP_FOR){
+	}  else if(no -> op == OP_DOWHILE){
+        int lv = label++;
+		int lf = label++;
+        fprintf(f, "F%d:\n", lv);
+        buildJVMUtil(f, no -> ptr2);
+		gerarExprLogRel(f, no -> ptr1, lv, lf);
+		fprintf(f, "F%d:\n", lf);
+    } else if(no -> op == OP_FOR){
 		buildJVMUtil(f, no -> ptr1);
 		int lv = label++;
 		int lf = label++;
@@ -520,17 +536,59 @@ void buildJVMUtil(FILE *f, struct ArvSint *no){
 		gerarExprLogRel(f, no -> ptr2, lv, lf);
 		fprintf(f, "F%d:\n", lf);
 	} else if(no -> op == OP_RETURN){
-        buildJVMPost(f, no -> ptr1);
         int t;
-        if(no -> ptr1 -> tipo == TIPO_IDFUNCAO){
-            t = no -> ptr1 -> tipoFuncao;
+        if(no -> ptr1 == NULL){
+            t = TIPO_VOID;
         } else {
-            t = no -> ptr1 -> tipo;
+            buildJVMPost(f, no -> ptr1);
+            if(no -> ptr1 -> tipo == TIPO_IDFUNCAO){
+                t = no -> ptr1 -> tipoFuncao;
+            } else {
+                t = no -> ptr1 -> tipo;
+            }
         }
         if(t == TIPO_VOID){
             fprintf(f, "\treturn\n");
         } else {
             fprintf(f, "\t%creturn\n", t == TIPO_INT ? 'i' : (t == TIPO_FLOAT ? 'f' : 'a'));
+        }
+    } else if(no -> op == OP_CHAMFUNC){
+        buildJVMPost(f, no -> ptr1);
+        fprintf(f, "\tinvokestatic JVM.%s(", no -> nomeFuncao);
+        printParametros(f, no -> ptr1);
+        int t = consultaTipoRetornoTabFunc(no -> nomeFuncao);
+        fprintf(f, ")%s\n", (t == TIPO_INT ? "I" : (t == TIPO_VOID ? "V" : (t == TIPO_FLOAT ? "F" : "Ljava/lang/String;"))));
+    } else if(no -> op == OP_READ){
+        int t = no -> ptr1 -> tipo;
+        if(t == TIPO_IDFUNCAO){
+            t = no -> ptr1 -> tipoFuncao;
+        } else if(t == TIPO_ID){
+            t = consultaTipoTabSimb(no -> ptr1 -> value.id);
+        }
+        if(t == TIPO_INT){
+            fprintf(f, "\taload %d\n", consultaPosiTabSimb("__read__"));
+            fprintf(f, "\tinvokevirtual java/util/Scanner/nextInt()I\n");
+            if(no -> ptr1 -> tipo == TIPO_IDFUNCAO){
+                fprintf(f, "\tistore %d\n", no -> ptr1 -> posicaoFuncao);
+            } else {
+                fprintf(f, "\tistore %d\n", consultaPosiTabSimb(no -> ptr1 -> value.id));
+            }
+        } else if(t == TIPO_FLOAT){
+            fprintf(f, "\taload %d\n", consultaPosiTabSimb("__read__"));
+            fprintf(f, "\tinvokevirtual java/util/Scanner/nextFloat()F\n");
+            if(no -> ptr1 -> tipo == TIPO_IDFUNCAO){
+                fprintf(f, "\tfstore %d\n", no -> ptr1 -> posicaoFuncao);
+            } else {
+                fprintf(f, "\tfstore %d\n", consultaPosiTabSimb(no -> ptr1 -> value.id));
+            }
+        } else {
+            fprintf(f, "\taload %d\n", consultaPosiTabSimb("__read__"));
+            fprintf(f, "\tinvokevirtual java/util/Scanner/nextLine()Ljava/lang/String;\n");
+            if(no -> ptr1 -> tipo == TIPO_IDFUNCAO){
+                fprintf(f, "\tastore %d\n", no -> ptr1 -> posicaoFuncao);
+            } else {
+                fprintf(f, "\tastore %d\n", consultaPosiTabSimb(no -> ptr1 -> value.id));
+            }
         }
     } else {
         buildJVMUtil(f, no -> ptr3);
@@ -543,80 +601,246 @@ int ehTipoFloat(struct ArvSint *no){
 }
 void gerarExprLogRel(FILE *f, struct ArvSint *no, int lv, int lf){
 	int laux;
+    int t1, t2, f1 = 0, f2 = 0;
 	switch(no -> op){
 		case OP_MENOR:
+            t1 = no -> ptr1 -> tipo;
+            t2 = no -> ptr2 -> tipo;
+            if(t1 == TIPO_IDFUNCAO){
+                t1 = no -> ptr1 -> tipoFuncao;
+            } else if(t1 == TIPO_ID){
+                t1 = consultaTipoTabSimb(no -> ptr1 -> value.id);
+            }
+            if(t2 == TIPO_IDFUNCAO){
+                t2 = no -> ptr2 -> tipoFuncao;
+            } else if(t2 == TIPO_ID){
+                t2 = consultaTipoTabSimb(no -> ptr2 -> value.id);
+            }
+            if(t1 != t2){
+                if(t1 == TIPO_INT){
+                    f1 = 1;
+                } else {
+                    f2 = 1;
+                }
+            }
 			buildJVMPost(f, no -> ptr1);
-			if(ehTipoFloat(no -> ptr1)){
-				fprintf(f, "\tf2i\n");
-			}
+            if(f1){
+                fprintf(f, "\ti2f\n");
+            }
 			buildJVMPost(f, no -> ptr2);
-			if(ehTipoFloat(no -> ptr2)){
-				fprintf(f, "\tf2i\n");
-			}
-			fprintf(f, "\tif_icmplt F%d\n", lv);
-			fprintf(f, "\tgoto F%d\n", lf);
+            if(f2){
+                fprintf(f, "\ti2f\n");
+            }
+
+            if(t1 == t2 && t1 == TIPO_INT){
+                fprintf(f, "\tif_icmplt F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            } else {
+                fprintf(f, "\tfcmpl\n");
+                fprintf(f, "\tldc -1\n");
+                fprintf(f, "\tif_icmpeq F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            }
 			break;
 		case OP_MAIOR:
+            t1 = no -> ptr1 -> tipo;
+            t2 = no -> ptr2 -> tipo;
+            if(t1 == TIPO_IDFUNCAO){
+                t1 = no -> ptr1 -> tipoFuncao;
+            } else if(t1 == TIPO_ID){
+                t1 = consultaTipoTabSimb(no -> ptr1 -> value.id);
+            }
+            if(t2 == TIPO_IDFUNCAO){
+                t2 = no -> ptr2 -> tipoFuncao;
+            } else if(t2 == TIPO_ID){
+                t2 = consultaTipoTabSimb(no -> ptr2 -> value.id);
+            }
+            if(t1 != t2){
+                if(t1 == TIPO_INT){
+                    f1 = 1;
+                } else {
+                    f2 = 1;
+                }
+            }
+
 			buildJVMPost(f, no -> ptr1);
-			if(ehTipoFloat(no -> ptr1)){
-				fprintf(f, "\tf2i\n");
-			}
+            if(f1){
+                fprintf(f, "\ti2f\n");
+            }
 			buildJVMPost(f, no -> ptr2);
+            if(f2){
+                fprintf(f, "\ti2f\n");
+            }
 
-			if(ehTipoFloat(no -> ptr2)){
-				fprintf(f, "\tf2i\n");
-			}
-
-			fprintf(f, "\tif_icmpgt F%d\n", lv);
-			fprintf(f, "\tgoto F%d\n", lf);
+            if(t1 == t2 && t1 == TIPO_INT){
+                fprintf(f, "\tif_icmpgt F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            } else {
+                fprintf(f, "\tfcmpl\n");
+                fprintf(f, "\tldc 1\n");
+                fprintf(f, "\tif_icmpeq F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            }
 			break;
 		case OP_MAIORIG:
-			buildJVMPost(f, no -> ptr1);
-			if(ehTipoFloat(no -> ptr1)){
-				fprintf(f, "\tf2i\n");
-			}
-			buildJVMPost(f, no -> ptr2);
-			if(ehTipoFloat(no -> ptr2)){
-				fprintf(f, "\tf2i\n");
-			}
-			fprintf(f, "\tif_icmpge F%d\n", lv);
-			fprintf(f, "\tgoto F%d\n", lf);
+            t1 = no -> ptr1 -> tipo;
+            t2 = no -> ptr2 -> tipo;
+            if(t1 == TIPO_IDFUNCAO){
+                t1 = no -> ptr1 -> tipoFuncao;
+            } else if(t1 == TIPO_ID){
+                t1 = consultaTipoTabSimb(no -> ptr1 -> value.id);
+            }
+            if(t2 == TIPO_IDFUNCAO){
+                t2 = no -> ptr2 -> tipoFuncao;
+            } else if(t2 == TIPO_ID){
+                t2 = consultaTipoTabSimb(no -> ptr2 -> value.id);
+            }
+            if(t1 != t2){
+                if(t1 == TIPO_INT){
+                    f1 = 1;
+                } else {
+                    f2 = 1;
+                }
+            }
+
+            buildJVMPost(f, no -> ptr1);
+            if(f1){
+                fprintf(f, "\ti2f\n");
+            }
+            buildJVMPost(f, no -> ptr2);
+            if(f2){
+                fprintf(f, "\ti2f\n");
+            }
+
+            if(t1 == t2 && t1 == TIPO_INT){
+                fprintf(f, "\tif_icmpge F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            } else {
+                fprintf(f, "\tfcmpl\n");
+                fprintf(f, "\tldc 0\n");
+                fprintf(f, "\tif_icmpge F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            }
 			break;
 		case OP_MENORIG:
-			buildJVMPost(f, no -> ptr1);
-			if(ehTipoFloat(no -> ptr1)){
-				fprintf(f, "\tf2i\n");
-			}
-			buildJVMPost(f, no -> ptr2);
-			if(ehTipoFloat(no -> ptr2)){
-				fprintf(f, "\tf2i\n");
-			}
-			fprintf(f, "\tif_icmple F%d\n", lv);
-			fprintf(f, "\tgoto F%d\n", lf);
+            t1 = no -> ptr1 -> tipo;
+            t2 = no -> ptr2 -> tipo;
+            if(t1 == TIPO_IDFUNCAO){
+                t1 = no -> ptr1 -> tipoFuncao;
+            } else if(t1 == TIPO_ID){
+                t1 = consultaTipoTabSimb(no -> ptr1 -> value.id);
+            }
+            if(t2 == TIPO_IDFUNCAO){
+                t2 = no -> ptr2 -> tipoFuncao;
+            } else if(t2 == TIPO_ID){
+                t2 = consultaTipoTabSimb(no -> ptr2 -> value.id);
+            }
+            if(t1 != t2){
+                if(t1 == TIPO_INT){
+                    f1 = 1;
+                } else {
+                    f2 = 1;
+                }
+            }
+
+            buildJVMPost(f, no -> ptr1);
+            if(f1){
+                fprintf(f, "\ti2f\n");
+            }
+            buildJVMPost(f, no -> ptr2);
+            if(f2){
+                fprintf(f, "\ti2f\n");
+            }
+
+            if(t1 == t2 && t1 == TIPO_INT){
+                fprintf(f, "\tif_icmple F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            } else {
+                fprintf(f, "\tfcmpl\n");
+                fprintf(f, "\tldc 0\n");
+                fprintf(f, "\tif_icmple F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            }
 			break;
 		case OP_CMP:
-			buildJVMPost(f, no -> ptr1);
-			if(ehTipoFloat(no -> ptr1)){
-				fprintf(f, "\tf2i\n");
-			}
-			buildJVMPost(f, no -> ptr2);
-			if(ehTipoFloat(no -> ptr2)){
-				fprintf(f, "\tf2i\n");
-			}
-			fprintf(f, "\tif_icmpeq F%d\n", lv);
-			fprintf(f, "\tgoto F%d\n", lf);
+            t1 = no -> ptr1 -> tipo;
+            t2 = no -> ptr2 -> tipo;
+            if(t1 == TIPO_IDFUNCAO){
+                t1 = no -> ptr1 -> tipoFuncao;
+            } else if(t1 == TIPO_ID){
+                t1 = consultaTipoTabSimb(no -> ptr1 -> value.id);
+            }
+            if(t2 == TIPO_IDFUNCAO){
+                t2 = no -> ptr2 -> tipoFuncao;
+            } else if(t2 == TIPO_ID){
+                t2 = consultaTipoTabSimb(no -> ptr2 -> value.id);
+            }
+            if(t1 != t2){
+                if(t1 == TIPO_INT){
+                    f1 = 1;
+                } else {
+                    f2 = 1;
+                }
+            }
+
+            buildJVMPost(f, no -> ptr1);
+            if(f1){
+                fprintf(f, "\ti2f\n");
+            }
+            buildJVMPost(f, no -> ptr2);
+            if(f2){
+                fprintf(f, "\ti2f\n");
+            }
+
+            if(t1 == t2 && t1 == TIPO_INT){
+                fprintf(f, "\tif_icmpeq F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            } else {
+                fprintf(f, "\tfcmpl\n");
+                fprintf(f, "\tldc 0\n");
+                fprintf(f, "\tif_icmpeq F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            }
 			break;
 		case OP_DIF:
-			buildJVMPost(f, no -> ptr1);
-			if(ehTipoFloat(no -> ptr1)){
-				fprintf(f, "\tf2i\n");
-			}
-			buildJVMPost(f, no -> ptr2);
-			if(ehTipoFloat(no -> ptr2)){
-				fprintf(f, "\tf2i\n");
-			}
-			fprintf(f, "\tif_icmpne F%d\n", lv);
-			fprintf(f, "\tgoto F%d\n", lf);
+            t1 = no -> ptr1 -> tipo;
+            t2 = no -> ptr2 -> tipo;
+            if(t1 == TIPO_IDFUNCAO){
+                t1 = no -> ptr1 -> tipoFuncao;
+            } else if(t1 == TIPO_ID){
+                t1 = consultaTipoTabSimb(no -> ptr1 -> value.id);
+            }
+            if(t2 == TIPO_IDFUNCAO){
+                t2 = no -> ptr2 -> tipoFuncao;
+            } else if(t2 == TIPO_ID){
+                t2 = consultaTipoTabSimb(no -> ptr2 -> value.id);
+            }
+            if(t1 != t2){
+                if(t1 == TIPO_INT){
+                    f1 = 1;
+                } else {
+                    f2 = 1;
+                }
+            }
+
+            buildJVMPost(f, no -> ptr1);
+            if(f1){
+                fprintf(f, "\ti2f\n");
+            }
+            buildJVMPost(f, no -> ptr2);
+            if(f2){
+                fprintf(f, "\ti2f\n");
+            }
+
+            if(t1 == t2 && t1 == TIPO_INT){
+                fprintf(f, "\tif_icmpne F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            } else {
+                fprintf(f, "\tfcmpl\n");
+                fprintf(f, "\tldc 0\n");
+                fprintf(f, "\tif_icmpne F%d\n", lv);
+                fprintf(f, "\tgoto F%d\n", lf);
+            }
 			break;
 		case OP_AND:
 			laux = label++;
@@ -787,7 +1011,7 @@ void printTabSimb(){
             NoLDDE * no = tabSimb[i].lista -> inicioLista;
             while(no != NULL) {
                 stuff *aux = (stuff *)no->dados;
-                printf("%-15s%-15s%d\n", aux -> id, (aux -> tipo == 1 ? "INT" : (aux -> tipo == 2 ? "STRING" : "FLOAT")), aux -> posicao);
+                printf("%-15s%-15s%d\n", aux -> id, (aux -> tipo == TIPO_INT ? "INT" : (aux -> tipo == TIPO_STRING ? "STRING" : (aux -> tipo == TIPO_SCANNER ? "SCANNER" : "FLOAT"))), aux -> posicao);
                 no = no->prox;
             }
         }
@@ -885,6 +1109,34 @@ int consultaTipoTabSimbFunc(char *nome){
     return -1;
 }
 
+int consultaNumVarTabSimbFunc(char *nome){
+    int h = hash(nome);
+    if(tabFunc[h].lista == NULL) return -1;
+    NoLDDE *no = tabFunc[h].lista -> inicioLista;
+    while(no != NULL){
+        dadosTabFunc *aux = (dadosTabFunc *)no -> dados;
+        if(strcmp(aux -> nome, nome) == 0){
+            return aux -> numVariaveisFunc;
+        }
+        no = no -> prox;
+    }
+    return -1;
+}
+
+void insertNumVarTabSimbFunc(char *nome, int numVariaveisFunc){
+    int h = hash(nome);
+    if(tabFunc[h].lista == NULL) return;
+    NoLDDE *no = tabFunc[h].lista -> inicioLista;
+    while(no != NULL){
+        dadosTabFunc *aux = (dadosTabFunc *)no -> dados;
+        if(strcmp(aux -> nome, nome) == 0){
+            aux -> numVariaveisFunc = numVariaveisFunc;
+            return;
+        }
+        no = no -> prox;
+    }
+}
+
 LDDE * consultaTipoArgsTabFunc(char *nome){
     int h = hash(nome);
     NoLDDE * no = tabFunc[h].lista -> inicioLista;
@@ -899,13 +1151,15 @@ LDDE * consultaTipoArgsTabFunc(char *nome){
 
 int consultaTipoRetornoTabFunc(char *nome){
     int h = hash(nome);
-    NoLDDE * no = tabFunc[h].lista -> inicioLista;
-    while(no != NULL) {
-        dadosTabFunc *aux = (dadosTabFunc *)no->dados;
-        if(strcmp(aux -> nome, nome) == 0){
-            return aux -> tipoRetorno;
+    if(tabFunc[h].lista != NULL){
+        NoLDDE * no = tabFunc[h].lista -> inicioLista;
+        while(no != NULL) {
+            dadosTabFunc *aux = (dadosTabFunc *)no->dados;
+            if(strcmp(aux -> nome, nome) == 0){
+                return aux -> tipoRetorno;
+            }
+            no = no -> prox;
         }
-        no = no -> prox;
     }
 }
 
@@ -942,18 +1196,22 @@ void printTabFunc(){
             while(no != NULL) {
                 dadosTabFunc *aux = (dadosTabFunc *)no->dados;
                 printf("%-15s%-15s", aux -> nome, (aux -> tipoRetorno == TIPO_INT ? "INT" : (aux -> tipoRetorno == TIPO_STRING ? "STRING" : (aux -> tipoRetorno == TIPO_FLOAT ? "FLOAT" : "VOID"))));
-                NoLDDE * args = aux -> listaArgs -> inicioLista;
-                if(args != NULL){
-                    int tmp = (int)(((Desespero *)(args -> dados)) -> value);
-                    printf("%s", tmp == TIPO_INT ? "INT" : (tmp == TIPO_FLOAT ? "FLOAT" : "STRING"));
-                }
-                args = args -> prox;
-                while(args != NULL){
-                    int tmp = (int)(((Desespero *)(args -> dados)) -> value);
-                    printf(", %s", (tmp) == TIPO_INT ? "INT" : (tmp == TIPO_FLOAT ? "FLOAT" : "STRING"));
+                if(aux -> listaArgs != NULL){
+                    NoLDDE * args = aux -> listaArgs -> inicioLista;
+                    if(args != NULL){
+                        int tmp = (int)(((Desespero *)(args -> dados)) -> value);
+                        printf("%s", tmp == TIPO_INT ? "INT" : (tmp == TIPO_FLOAT ? "FLOAT" : "STRING"));
+                    }
                     args = args -> prox;
+                    while(args != NULL){
+                        int tmp = (int)(((Desespero *)(args -> dados)) -> value);
+                        printf(", %s", (tmp) == TIPO_INT ? "INT" : (tmp == TIPO_FLOAT ? "FLOAT" : "STRING"));
+                        args = args -> prox;
+                    }
+                    printf("\n");
+                } else {
+                    printf("\n");
                 }
-                printf("\n");
                 no = no -> prox;
             }
         }
@@ -962,17 +1220,19 @@ void printTabFunc(){
 
 void printTipoArgsFunc(FILE *f, char *nome){
     LDDE * listaArgs = consultaTipoArgsTabFunc(nome);
-    NoLDDE * no = listaArgs -> inicioLista;
-    while(no != NULL){
-        int tmp = (int)(((Desespero *)(no -> dados)) -> value);
-        fprintf(f, "%s", tmp == TIPO_INT ? "I" : (tmp == TIPO_FLOAT ? "F" : "Ljava/lang/String;"));
-        no = no -> prox;
+    if(listaArgs != NULL){
+        NoLDDE * no = listaArgs -> inicioLista;
+        while(no != NULL){
+            int tmp = (int)(((Desespero *)(no -> dados)) -> value);
+            fprintf(f, "%s", tmp == TIPO_INT ? "I" : (tmp == TIPO_FLOAT ? "F" : "Ljava/lang/String;"));
+            no = no -> prox;
+        }
     }
 }
 
 void printTipoRetornoFunc(FILE *f, char *nome){
     int tipoRet = consultaTipoRetornoTabFunc(nome);
-    fprintf(f, "%s\n", tipoRet == TIPO_INT ? "I" : (tipoRet == TIPO_FLOAT ? "F" : "Ljava/lang/String;"));
+    fprintf(f, "%s\n", tipoRet == TIPO_INT ? "I" : (tipoRet == TIPO_FLOAT ? "F" : (tipoRet == TIPO_VOID ? "V" : "Ljava/lang/String;")));
 }
 
 /* Ver se o numero e float ou int */

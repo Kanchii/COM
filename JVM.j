@@ -10,7 +10,7 @@
 
 .method public static isPrimo(II)I
 	.limit stack 10
-	.limit locals 10
+	.limit locals 4
 	getstatic java/lang/System/out Ljava/io/PrintStream;
 	ldc "Testando "
 	invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V
@@ -74,7 +74,7 @@ F3:
 
 .method public static main([Ljava/lang/String;)V
 	.limit stack 10
-	.limit locals 10
+	.limit locals 3
 	ldc 995
 	istore 1
 	iload 1

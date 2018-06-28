@@ -1,7 +1,18 @@
+String changeName(){
+	String ret;
+	ret = "Debugger profissional";
+	return ret;
+}
+
 {
 	String nome;
-	print("Qual o seu nome?");
+
+	print("Digite o seu nome: ");
 	read(nome);
-	print("Ola ");
+	print("Voce era ");
 	print(nome);
+	print(", agora eh: ");
+	nome = changeName();
+	print(nome);
+	print("\n");
 }

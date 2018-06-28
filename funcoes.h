@@ -11,6 +11,7 @@
 #define TIPO_FLOAT 3
 #define TIPO_ID 4
 #define TIPO_IDFUNCAO 5
+#define TIPO_SCANNER 6
 
 #define OP_ADD 1
 #define OP_SUB 2
@@ -38,6 +39,7 @@
 #define OP_RAIZ 24
 #define OP_PARAMETROS 25
 #define OP_CHAMFUNC 26
+#define OP_DOWHILE 27
 #define OP_ALEA 100
 
 #define MAX_HASH 113
@@ -80,6 +82,7 @@ typedef struct DadosTabFunc {
     char * nome;
     int tipoRetorno;
     LDDE * listaArgs;
+    int numVariaveisFunc;
 } dadosTabFunc;
 
 struct TabSimbF {
@@ -145,9 +148,9 @@ void printPosOrdem(struct ArvSint *no);
 
 /* JVM */
 void printInit(FILE *f);
-void printInitMain(FILE *f);
+void printInitMain(FILE *f, int numVariaveisMain, int scanner);
 void printEnd(FILE *f);
-void buildJVM(struct ArvSint *no);
+void buildJVM(struct ArvSint *no, int numVariaveisMain, int scanner);
 void buildJVMFunctions(FILE *f, struct ArvSint *no);
 void buildJVMUtil(FILE *f, struct ArvSint *no);
 void buildJVMPost(FILE *f, struct ArvSint *no);
@@ -171,6 +174,8 @@ void insereTabFuncao(int tipo, char *nome, LDDE * lista);
 void insereTabSimboloTmp(LDDE *p, int tipo);
 int consultaPosiTabSimbFunc(char *nome);
 int consultaTipoTabSimbFunc(char *nome);
+int consultaNumVarTabSimbFunc(char *nome);
+void insertNumVarTabSimbFunc(char *nome, int numVariaveisFunc);
 LDDE * consultaTipoArgsTabFunc(char *nome);
 int consultaTipoRetornoTabFunc(char *nome);
 void printTabSimbTmp();

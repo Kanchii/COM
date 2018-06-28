@@ -26,6 +26,7 @@ literal (\".*\")
 "print" {return TPRINT;}
 "read" {return TREAD;}
 "while" {return TWHILE;}
+"do" {return TDO;}
 "for" {return TFOR;}
 "void" {return TVOID;}
 "int" {return TINT;}

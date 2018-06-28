@@ -1,10 +1,17 @@
+void helloWorld(String msg){
+	print(msg);
+	print("\n");
+	return;
+}
+
 {
-	int x, y;
-	x = 5;
-	for(x = 1; x <= 100; x++){
-		print("Teste: ");
-		print(x);
-		print("\n");
-	}
-	return 0;
+	int i, a, b, c, d, e;
+	float x, y, z, w, k, l;
+	int xx, yy;
+	String abacate, heroi, caipira;
+	i = 0;
+	do {
+		helloWorld("Ola mundo");
+		i = i + 1;
+	} while(i < 10);
 }

@@ -19,5 +19,4 @@
 	print("\nRes = ");
 	print(a);
 	print("\n");
-	return 0;
 }
